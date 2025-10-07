@@ -7,6 +7,11 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-
+        <Button Content="Bağlantıyı Test Et" 
+            HorizontalAlignment="Center" 
+            VerticalAlignment="Center"
+            Width="150"
+            Height="50"
+            Click="TestButton_Click"/>
     </Grid>
 </Window>
