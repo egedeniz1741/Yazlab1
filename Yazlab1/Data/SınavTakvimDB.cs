@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MySql.Data;
+
+using System.Data.Entity;
 using Yazlab1.Model;
 using Yazlab1.Models; 
 
@@ -8,8 +10,9 @@ namespace Yazlab1.Data
     public class SinavTakvimDbContext : DbContext
     {
        
-        public SinavTakvimDbContext()
+        public SinavTakvimDbContext() : base()
         {
+           
         }
 
         

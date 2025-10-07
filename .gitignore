@@ -12,4 +12,5 @@ packages/
 *.pdb
 *.exe
 *.dll
+App.config
 appsettings.json # sensitive data
