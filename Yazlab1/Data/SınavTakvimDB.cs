@@ -11,6 +11,8 @@ namespace Yazlab1.Data
         public DbSet<Kullanici> Kullanicilar { get; set; }
         public DbSet<Rol> Roller { get; set; }
         public DbSet<Bolum> Bolumler { get; set; }
+
+        public DbSet<Derslik> Derslikler { get; set; }
       
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -27,11 +29,13 @@ namespace Yazlab1.Data
           
             modelBuilder.Entity<Rol>().HasKey(r => r.RolID);
 
-            // Bolum tablosunun birincil anahtarı BolumID'dir.
+            
             modelBuilder.Entity<Bolum>().HasKey(b => b.BolumID);
 
-            // Kullanici tablosunun birincil anahtarı KullaniciID'dir.
+            
             modelBuilder.Entity<Kullanici>().HasKey(k => k.KullaniciID);
+
+            modelBuilder.Entity<Derslik>().HasKey(d => d.DerslikID);
         }
     }
 }

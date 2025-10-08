@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Windows;
 using Yazlab1.Data;
@@ -35,20 +36,34 @@ namespace Yazlab1.Views
                 using var dbContext = new SinavTakvimDbContext();
 
                 var user = dbContext.Kullanicilar.FirstOrDefault(u => u.Eposta == email);
+                var userrolu = dbContext.Kullanicilar.Include(u => u.Rol).FirstOrDefault(u => u.Eposta == email);
 
-                if (user != null)
+                if (user != null && userrolu != null)
                 {
 
                     if (user.SifreHash == password) //sonra hashli sifreyle kontrol edeceğiz burayı
                     {
 
-                        MainWindow mainWindow = new();
-                        mainWindow.Show();
-                        this.Close();
+                        if(userrolu.Rol.RolAdi == "Bölüm Koordinatörü") 
+                        {
+                            DerslikYonetimWindow derslikWindow = new();
+                            derslikWindow.Show();
+                            this.Close();
+
+                        
+                        }
+                        else if (userrolu.Rol.RolAdi == "Admin") 
+                        {
+                            MainWindow mainWindow = new();
+                            mainWindow.Show();
+                            this.Close();
+
+                        }
+                           
                     }
                     else
                     {
-                        ErrorMessageTextBlock.Text = "Hatalı şifre girdiniz.";
+                        ErrorMessageTextBlock.Text = "Hatalı şifre girdiniz ya da kullanıcının rol yetersizliğinden sisteme giriş yetkisi yok.";
                     }
                 }
                 else

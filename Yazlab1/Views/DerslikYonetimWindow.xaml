@@ -1,0 +1,44 @@
+﻿<Window x:Class="Yazlab1.Views.DerslikYonetimWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Derslik Yönetimi" Height="600" Width="800">
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0" Margin="0,0,10,0">
+            <TextBlock Text="Derslik Bilgileri" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBlock Text="Derslik Kodu:"/>
+            <TextBox Name="DerslikKoduTxt" Margin="0,5,0,10"/>
+            <TextBlock Text="Derslik Adı:"/>
+            <TextBox Name="DerslikAdiTxt" Margin="0,5,0,10"/>
+            <TextBlock Text="Kapasite:"/>
+            <TextBox Name="KapasiteTxt" Margin="0,5,0,10"/>
+            <TextBlock Text="Enine Sıra (Sütun):"/>
+            <TextBox Name="EnineSiraTxt" Margin="0,5,0,10"/>
+            <TextBlock Text="Boyuna Sıra (Satır):"/>
+            <TextBox Name="BoyunaSiraTxt" Margin="0,5,0,10"/>
+            <TextBlock Text="Sıra Yapısı (2 şerli, 3 erli):"/>
+            <TextBox Name="SiraYapisiTxt" Margin="0,5,0,20"/>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="Ekle" Width="70" Margin="5"/>
+                <Button Content="Güncelle" Width="70" Margin="5"/>
+                <Button Content="Sil" Width="70" Margin="5"/>
+            </StackPanel>
+        </StackPanel>
+
+        <DockPanel Grid.Column="1">
+            <TextBlock DockPanel.Dock="Top" Text="Bölüm Derslikleri" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+            <DataGrid Name="DersliklerDataGrid" AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Kod" Binding="{Binding DerslikKodu}"/>
+                    <DataGridTextColumn Header="Ad" Binding="{Binding DerslikAdi}"/>
+                    <DataGridTextColumn Header="Kapasite" Binding="{Binding Kapasite}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+    </Grid>
+</Window>
