@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Org.BouncyCastle.Asn1.Mozilla;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -11,9 +12,9 @@ namespace Yazlab1.Model
     public class Rol
     {
         [Key]
-        int RolID { get; set; }
+        public int RolID { get; set; }
 
-        string RolAdi { get; set; }
+        public string RolAdi { get; set; }
 
         public virtual ICollection<Kullanici> Kullanicilar { get; set; }
 

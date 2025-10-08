@@ -13,4 +13,5 @@ packages/
 *.exe
 *.dll
 App.config
-appsettings.json # sensitive data
+app.config
+appsettings.json 

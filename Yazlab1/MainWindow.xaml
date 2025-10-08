@@ -9,9 +9,10 @@
     <Grid>
         <Button Content="Bağlantıyı Test Et" 
             HorizontalAlignment="Center" 
-            VerticalAlignment="Center"
+            VerticalAlignment="Top"
             Width="150"
             Height="50"
-            Click="TestButton_Click"/>
+            Click="TestButton_Click" Margin="0,187,0,0"/>
+        <Label Content="Giriş" HorizontalAlignment="Center" Margin="0,97,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>

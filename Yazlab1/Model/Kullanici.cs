@@ -13,10 +13,7 @@ namespace Yazlab1.Models
 
         public string ?SifreHash { get; set; }
 
-        public string ?Ad { get; set; }   
-        
-        public string ?Soyad { get; set; }
-
+        public string ?AdSoyad { get; set; }   
         public int RolID { get; set; }
         [ForeignKey("RolID")]
         public virtual Rol Rol { get; set; }
