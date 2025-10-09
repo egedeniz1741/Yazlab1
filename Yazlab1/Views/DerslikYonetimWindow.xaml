@@ -11,32 +11,34 @@
         <StackPanel Grid.Column="0" Margin="0,0,10,0">
             <TextBlock Text="Derslik Bilgileri" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
             <TextBlock Text="Derslik Kodu:"/>
-            <TextBox Name="DerslikKoduTxt" Margin="0,5,0,10"/>
+            <TextBox Text="{Binding DerslikKodu, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,10"/>
             <TextBlock Text="Derslik Adı:"/>
-            <TextBox Name="DerslikAdiTxt" Margin="0,5,0,10"/>
+            <TextBox Text="{Binding DerslikAdi, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,10"/>
             <TextBlock Text="Kapasite:"/>
-            <TextBox Name="KapasiteTxt" Margin="0,5,0,10"/>
+            <TextBox Text="{Binding Kapasite, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,10"/>
             <TextBlock Text="Enine Sıra (Sütun):"/>
-            <TextBox Name="EnineSiraTxt" Margin="0,5,0,10"/>
+            <TextBox Text="{Binding EnineSiraSayisi, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,10"/>
             <TextBlock Text="Boyuna Sıra (Satır):"/>
-            <TextBox Name="BoyunaSiraTxt" Margin="0,5,0,10"/>
+            <TextBox Text="{Binding BoyunaSiraSayisi, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,10"/>
             <TextBlock Text="Sıra Yapısı (2 şerli, 3 erli):"/>
-            <TextBox Name="SiraYapisiTxt" Margin="0,5,0,20"/>
+            <TextBox Text="{Binding SiraYapisi, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,20"/>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Content="Ekle" Width="70" Margin="5"/>
-                <Button Content="Güncelle" Width="70" Margin="5"/>
-                <Button Content="Sil" Width="70" Margin="5"/>
+                <Button Content="Ekle" Width="70" Margin="5" Command="{Binding EkleCommand}"/>
+                <Button Content="Güncelle" Width="70" Margin="5" Command="{Binding GuncelleCommand}"/>
+                <Button Content="Sil" Width="70" Margin="5" Command="{Binding SilCommand}"/>
             </StackPanel>
         </StackPanel>
 
         <DockPanel Grid.Column="1">
             <TextBlock DockPanel.Dock="Top" Text="Bölüm Derslikleri" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
-            <DataGrid Name="DersliklerDataGrid" AutoGenerateColumns="False">
+            <DataGrid ItemsSource="{Binding Derslikler}" 
+                      SelectedItem="{Binding SelectedDerslik}"
+                      AutoGenerateColumns="False" IsReadOnly="True">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Kod" Binding="{Binding DerslikKodu}"/>
-                    <DataGridTextColumn Header="Ad" Binding="{Binding DerslikAdi}"/>
-                    <DataGridTextColumn Header="Kapasite" Binding="{Binding Kapasite}"/>
+                    <DataGridTextColumn Header="Kod" Binding="{Binding DerslikKodu}" Width="*"/>
+                    <DataGridTextColumn Header="Ad" Binding="{Binding DerslikAdi}" Width="2*"/>
+                    <DataGridTextColumn Header="Kapasite" Binding="{Binding Kapasite}" Width="*"/>
                 </DataGrid.Columns>
             </DataGrid>
         </DockPanel>
