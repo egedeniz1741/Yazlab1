@@ -28,6 +28,6 @@ namespace Yazlab1.Model
 
         public int BoyunaSiraSayisi { get; set; }
 
-        public string SiraYapisi { get; set; }
+        public int SiraYapisi { get; set; }
     }
 }

@@ -13,8 +13,10 @@ namespace Yazlab1.ViewModel
     public partial class DerslikYonetimViewModel : ObservableObject
     {
         private readonly SinavTakvimDbContext _dbContext = new();
+        private readonly int _AktifkullaniciBolumId; 
 
-       
+
+
         [ObservableProperty]
         private string _derslikKodu;
 
@@ -31,17 +33,18 @@ namespace Yazlab1.ViewModel
         private int _boyunaSiraSayisi;
 
         [ObservableProperty]
-        private string _siraYapisi;
+        private int _siraYapisi;
 
-   
+
         [ObservableProperty]
         private Derslik _selectedDerslik;
 
        
         public ObservableCollection<Derslik> Derslikler { get; set; }
 
-        public DerslikYonetimViewModel()
+        public DerslikYonetimViewModel(Kullanici Aktifkullanici)
         {
+            _AktifkullaniciBolumId = Aktifkullanici.BolumID.Value;
             Derslikler = new ObservableCollection<Derslik>();
             DerslikleriYukle();
         }
@@ -49,7 +52,7 @@ namespace Yazlab1.ViewModel
         private void DerslikleriYukle()
         {
             Derslikler.Clear();
-            var derslikler = _dbContext.Derslikler.ToList();
+            var derslikler = _dbContext.Derslikler.Where(d => d.BolumID == _AktifkullaniciBolumId).ToList();
             foreach (var derslik in derslikler)
             {
                 Derslikler.Add(derslik);
@@ -63,7 +66,7 @@ namespace Yazlab1.ViewModel
             var yeniDerslik = new Derslik
             {
                 
-                BolumID = 1,
+                BolumID =_AktifkullaniciBolumId,
                 DerslikKodu = DerslikKodu,
                 DerslikAdi = DerslikAdi,
                 Kapasite = Kapasite,
@@ -72,10 +75,19 @@ namespace Yazlab1.ViewModel
                 SiraYapisi = SiraYapisi
             };
 
-            _dbContext.Derslikler.Add(yeniDerslik);
-            _dbContext.SaveChanges();
-            DerslikleriYukle(); 
-            MessageBox.Show("Derslik başarıyla eklendi.");
+            if (EnineSiraSayisi * BoyunaSiraSayisi * SiraYapisi != Kapasite) 
+            {
+                MessageBox.Show("Sıraların kapasitesi girdiğiniz kapasiteye uymuyor tekrar deneyiniz.");
+            }
+            else
+            {
+                _dbContext.Derslikler.Add(yeniDerslik);
+                _dbContext.SaveChanges();
+                DerslikleriYukle();
+                MessageBox.Show("Derslik başarıyla eklendi.");
+
+            }
+                
         }
 
         [RelayCommand]
@@ -94,9 +106,18 @@ namespace Yazlab1.ViewModel
             SelectedDerslik.BoyunaSiraSayisi = BoyunaSiraSayisi;
             SelectedDerslik.SiraYapisi = SiraYapisi;
 
-            _dbContext.SaveChanges();
+            if(EnineSiraSayisi * BoyunaSiraSayisi *SiraYapisi != Kapasite)
+            {
+                MessageBox.Show("Sıraların kapasitesi girdiğiniz kapasiteye uymuyor tekrar deneyiniz.");
+            }
+            else
+            {
+                _dbContext.SaveChanges();
             DerslikleriYukle();
             MessageBox.Show("Derslik başarıyla güncellendi.");
+
+            }
+                
         }
 
         [RelayCommand]

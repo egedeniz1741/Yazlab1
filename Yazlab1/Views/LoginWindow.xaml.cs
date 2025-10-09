@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using System.Security.RightsManagement;
 using System.Windows;
 using Yazlab1.Data;
 
@@ -36,7 +37,7 @@ namespace Yazlab1.Views
                 using var dbContext = new SinavTakvimDbContext();
 
                 var user = dbContext.Kullanicilar.FirstOrDefault(u => u.Eposta == email);
-                var userrolu = dbContext.Kullanicilar.Include(u => u.Rol).FirstOrDefault(u => u.Eposta == email);
+                var userrolu = dbContext.Kullanicilar.Include(u => u.Rol).Include(u=> u.Bolum).FirstOrDefault(u => u.Eposta == email);
 
                 if (user != null && userrolu != null)
                 {
@@ -46,7 +47,7 @@ namespace Yazlab1.Views
 
                         if(userrolu.Rol.RolAdi == "Bölüm Koordinatörü") 
                         {
-                            DerslikYonetimWindow derslikWindow = new();
+                            DerslikYonetimWindow derslikWindow = new(userrolu);
                             derslikWindow.Show();
                             this.Close();
 

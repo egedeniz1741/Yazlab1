@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Yazlab1.Models;
 using Yazlab1.ViewModel;
 
 namespace Yazlab1.Views
@@ -20,10 +21,12 @@ namespace Yazlab1.Views
     /// </summary>
     public partial class DerslikYonetimWindow : Window
     {
-        public DerslikYonetimWindow()
+        public DerslikYonetimWindow(Kullanici Aktifkullanici)
         {
             InitializeComponent();
-            this.DataContext = new DerslikYonetimViewModel();
+
+            this.Title = "Derslik Yönetimi " + Aktifkullanici.Bolum.BolumAdi;
+            this.DataContext = new DerslikYonetimViewModel(Aktifkullanici);
         }
     }
 }
