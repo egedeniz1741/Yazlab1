@@ -47,8 +47,12 @@ namespace Yazlab1.Views
 
                         if(userrolu.Rol.RolAdi == "Bölüm Koordinatörü") 
                         {
-                            DerslikYonetimWindow derslikWindow = new(userrolu);
-                            derslikWindow.Show();
+                            //DerslikYonetimWindow derslikWindow = new(userrolu);  //denemelik degistim sonra ayarlariz
+                            //derslikWindow.Show();
+
+                            ParsingWindow parsingWindow = new(userrolu);
+                            parsingWindow.Show();
+
                             this.Close();
 
                         
