@@ -13,7 +13,15 @@ namespace Yazlab1.Data
         public DbSet<Bolum> Bolumler { get; set; }
 
         public DbSet<Derslik> Derslikler { get; set; }
-      
+
+        public DbSet<Ders> Dersler { get; set; }
+
+        public DbSet<OgretimUyesi> OgretimUyeleri { get; set; }
+
+        public DbSet<Ogrenci> Ogrenciler { get; set; } 
+        public DbSet<OgrenciDersKayitlari> OgrenciDersKayitlari { get; set; } 
+
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -36,6 +44,18 @@ namespace Yazlab1.Data
             modelBuilder.Entity<Kullanici>().HasKey(k => k.KullaniciID);
 
             modelBuilder.Entity<Derslik>().HasKey(d => d.DerslikID);
+
+            modelBuilder.Entity<Ders>().HasKey(d => d.DersID);
+
+            modelBuilder.Entity<OgretimUyesi>().HasKey(o => o.OgretimUyesiID);
+
+            modelBuilder.Entity<Ogrenci>().HasKey(o => o.OgrenciID); 
+
+         
+            modelBuilder.Entity<OgrenciDersKayitlari>().HasKey(ok => new { ok.OgrenciID, ok.DersID });
+
+
         }
     }
+    
 }

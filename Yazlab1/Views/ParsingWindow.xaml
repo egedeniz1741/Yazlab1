@@ -1,0 +1,42 @@
+﻿<Window x:Class="Yazlab1.Views.ParsingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Yazlab1.Views"
+        xmlns:converters="clr-namespace:Yazlab1.Converters"
+        mc:Ignorable="d"
+        Title="Excel Veri Yükleme" Height="300" Width="500"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <converters:InvertBooleanConverter x:Key="InvertBooleanConverter"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Window.Resources>
+
+    <Grid Margin="20">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+
+            <TextBlock Text="Lütfen Yüklemek İstediğiniz Veri Türünü Seçin" 
+                       FontSize="16" FontWeight="Bold" Margin="0,0,0,20" TextAlignment="Center" TextWrapping="Wrap"/>
+
+            <Button Name="ExcelButton" Content="Excel Ders Listesi Yükle" 
+                    Height="40" Margin="0,0,0,10"
+                    Command="{Binding UploadDerslerExcelCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertBooleanConverter}}"/>
+
+            <Button Name="ExcelButton2" Content="Excel Öğrenci Listesi Yükle" 
+                    Height="40"
+                    Command="{Binding UploadOgrencilerExcelCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertBooleanConverter}}"/>
+
+            <TextBlock Text="{Binding StatusMessage}" 
+                       Foreground="DarkBlue" FontWeight="SemiBold"
+                       Margin="0,20,0,5" TextAlignment="Center" TextWrapping="Wrap" MinHeight="30"/>
+
+            <ProgressBar IsIndeterminate="{Binding IsBusy}" Height="15"
+                         Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+        </StackPanel>
+    </Grid>
+</Window>
