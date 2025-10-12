@@ -11,5 +11,12 @@ namespace Yazlab1.Views
             InitializeComponent();
             this.DataContext = new ParsingViewModel(aktifKullanici);
         }
+
+        private void GeriButton_Click(object sender, RoutedEventArgs e)
+        {
+          
+
+            this.Close(); 
+        }
     }
 }

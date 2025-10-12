@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Yazlab1.Views"
         xmlns:converters="clr-namespace:Yazlab1.Converters"
         mc:Ignorable="d"
-        Title="Excel Veri Yükleme" Height="300" Width="500"
+        Title="Excel Veri Yükleme" Height="350" Width="500"
         WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
@@ -36,6 +36,10 @@
 
             <ProgressBar IsIndeterminate="{Binding IsBusy}" Height="15"
                          Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+            <Button Content="Geri Dön" 
+                    Margin="0,20,0,0" Width="100"
+                    IsCancel="True" Click="GeriButton_Click"/>
 
         </StackPanel>
     </Grid>

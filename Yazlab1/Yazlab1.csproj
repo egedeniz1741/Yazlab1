@@ -9,10 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Views\Screenshot_36.png" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.105.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Microsoft.Azure.Management.ResourceManager" Version="3.13.1-preview" />
@@ -28,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Views\Screenshot_36.png" />
+    <Folder Include="images\" />
   </ItemGroup>
 
 </Project>

@@ -21,12 +21,12 @@ namespace Yazlab1.Views
     /// </summary>
     public partial class DerslikYonetimWindow : Window
     {
-        public DerslikYonetimWindow(Kullanici Aktifkullanici)
+        public DerslikYonetimWindow(Kullanici aktifKullanici)
         {
             InitializeComponent();
 
-            this.Title = "Derslik Yönetimi " + Aktifkullanici.Bolum.BolumAdi;
-            this.DataContext = new DerslikYonetimViewModel(Aktifkullanici);
+            this.Title = "Derslik Yönetimi " + aktifKullanici.Bolum.BolumAdi;
+            this.DataContext = new DerslikYonetimViewModel(aktifKullanici);
         }
     }
 }

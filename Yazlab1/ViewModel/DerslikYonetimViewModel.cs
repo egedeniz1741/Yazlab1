@@ -6,17 +6,19 @@ using System.Windows;
 using Yazlab1.Data;
 using Yazlab1.Model;
 using Yazlab1.Models;
+using Yazlab1.Views;
 
 namespace Yazlab1.ViewModel
 {
-    
     public partial class DerslikYonetimViewModel : ObservableObject
     {
-        private readonly SinavTakvimDbContext _dbContext = new();
-        private readonly int _AktifkullaniciBolumId; 
+        private readonly SinavTakvimDbContext _dbContext = new SinavTakvimDbContext();
+        private readonly Kullanici _aktifKullanici;
+        private readonly int _aktifKullaniciBolumId;
 
+       
 
-
+       
         [ObservableProperty]
         private string _derslikKodu;
 
@@ -35,38 +37,45 @@ namespace Yazlab1.ViewModel
         [ObservableProperty]
         private int _siraYapisi;
 
-
+        
         [ObservableProperty]
         private Derslik _selectedDerslik;
 
-       
+    
         public ObservableCollection<Derslik> Derslikler { get; set; }
 
-        public DerslikYonetimViewModel(Kullanici Aktifkullanici)
+       
+        public ObservableCollection<object> SeatLayout { get; set; }
+
+        public DerslikYonetimViewModel(Kullanici aktifKullanici)
         {
-            _AktifkullaniciBolumId = Aktifkullanici.BolumID.Value;
+            _aktifKullanici = aktifKullanici;
+            _aktifKullaniciBolumId = aktifKullanici.BolumID.Value;
             Derslikler = new ObservableCollection<Derslik>();
+            SeatLayout = new ObservableCollection<object>();
             DerslikleriYukle();
         }
 
         private void DerslikleriYukle()
         {
             Derslikler.Clear();
-            var derslikler = _dbContext.Derslikler.Where(d => d.BolumID == _AktifkullaniciBolumId).ToList();
+           
+            var derslikler = _dbContext.Derslikler
+                                       .Where(d => d.BolumID == _aktifKullaniciBolumId)
+                                       .ToList();
             foreach (var derslik in derslikler)
             {
                 Derslikler.Add(derslik);
             }
         }
 
-       
         [RelayCommand]
         private void Ekle()
         {
+            var dbDerslik = _dbContext.Derslikler.Find(SelectedDerslik.DerslikID);
             var yeniDerslik = new Derslik
             {
-                
-                BolumID =_AktifkullaniciBolumId,
+                BolumID = _aktifKullaniciBolumId,
                 DerslikKodu = DerslikKodu,
                 DerslikAdi = DerslikAdi,
                 Kapasite = Kapasite,
@@ -74,19 +83,27 @@ namespace Yazlab1.ViewModel
                 BoyunaSiraSayisi = BoyunaSiraSayisi,
                 SiraYapisi = SiraYapisi
             };
-
-            if (EnineSiraSayisi * BoyunaSiraSayisi * SiraYapisi != Kapasite) 
+            if(dbDerslik != null)
             {
-                MessageBox.Show("Sıraların kapasitesi girdiğiniz kapasiteye uymuyor tekrar deneyiniz.");
+                MessageBox.Show("Lütfen ekle tuşuna değil güncelle tuşuna basınız");
             }
             else
             {
-                _dbContext.Derslikler.Add(yeniDerslik);
-                _dbContext.SaveChanges();
-                DerslikleriYukle();
-                MessageBox.Show("Derslik başarıyla eklendi.");
+                if (SiraYapisi * EnineSiraSayisi * BoyunaSiraSayisi != Kapasite)
+                {
+                    MessageBox.Show("verdiğiniz sıra bilgileri kapasite ile eşleşmiyor lütfen kapasiteyi doğru giriniz");
 
+                }
+                else
+                {
+                    _dbContext.Derslikler.Add(yeniDerslik);
+                    _dbContext.SaveChanges();
+                    DerslikleriYukle();
+                    MessageBox.Show("Derslik başarıyla eklendi.");
+                }
             }
+          
+
                 
         }
 
@@ -99,25 +116,29 @@ namespace Yazlab1.ViewModel
                 return;
             }
 
-            SelectedDerslik.DerslikKodu = DerslikKodu;
-            SelectedDerslik.DerslikAdi = DerslikAdi;
-            SelectedDerslik.Kapasite = Kapasite;
-            SelectedDerslik.EnineSiraSayisi = EnineSiraSayisi;
-            SelectedDerslik.BoyunaSiraSayisi = BoyunaSiraSayisi;
-            SelectedDerslik.SiraYapisi = SiraYapisi;
-
-            if(EnineSiraSayisi * BoyunaSiraSayisi *SiraYapisi != Kapasite)
+            var dbDerslik = _dbContext.Derslikler.Find(SelectedDerslik.DerslikID);
+            if (dbDerslik != null)
             {
-                MessageBox.Show("Sıraların kapasitesi girdiğiniz kapasiteye uymuyor tekrar deneyiniz.");
-            }
-            else
-            {
-                _dbContext.SaveChanges();
-            DerslikleriYukle();
-            MessageBox.Show("Derslik başarıyla güncellendi.");
+                dbDerslik.DerslikKodu = DerslikKodu;
+                dbDerslik.DerslikAdi = DerslikAdi;
+                dbDerslik.Kapasite = Kapasite;
+                dbDerslik.EnineSiraSayisi = EnineSiraSayisi;
+                dbDerslik.BoyunaSiraSayisi = BoyunaSiraSayisi;
+                dbDerslik.SiraYapisi = SiraYapisi;
 
+                if (SiraYapisi * EnineSiraSayisi * BoyunaSiraSayisi != Kapasite)
+                {
+                    MessageBox.Show("verdiğiniz sıra bilgileri kapasite ile eşleşmiyor lütfen kapasiteyi doğru giriniz");
+
+                }
+                else
+                {
+                    _dbContext.SaveChanges();
+                    DerslikleriYukle();
+                    MessageBox.Show("Derslik başarıyla güncellendi.");
+                }
+                    
             }
-                
         }
 
         [RelayCommand]
@@ -129,23 +150,55 @@ namespace Yazlab1.ViewModel
                 return;
             }
 
-            _dbContext.Derslikler.Remove(SelectedDerslik);
-            _dbContext.SaveChanges();
-            DerslikleriYukle();
-            MessageBox.Show("Derslik başarıyla silindi.");
+            var dbDerslik = _dbContext.Derslikler.Find(SelectedDerslik.DerslikID);
+            if (dbDerslik != null)
+            {
+                _dbContext.Derslikler.Remove(dbDerslik);
+                _dbContext.SaveChanges();
+                DerslikleriYukle(); 
+                MessageBox.Show("Derslik başarıyla silindi.");
+            }
         }
 
-     
+        [RelayCommand]
+        private void ExcelEkraninaGit()
+        {
+            ParsingWindow parsingWindow = new ParsingWindow(_aktifKullanici);
+            parsingWindow.Show();
+            
+        }
+
         partial void OnSelectedDerslikChanged(Derslik value)
         {
             if (value != null)
             {
+              
                 DerslikKodu = value.DerslikKodu;
                 DerslikAdi = value.DerslikAdi;
                 Kapasite = value.Kapasite;
                 EnineSiraSayisi = value.EnineSiraSayisi;
                 BoyunaSiraSayisi = value.BoyunaSiraSayisi;
                 SiraYapisi = value.SiraYapisi;
+
+               
+                GenerateSeatLayout();
+            }
+        }
+
+      
+        private void GenerateSeatLayout()
+        {
+            SeatLayout.Clear();
+
+            if (SelectedDerslik == null || SelectedDerslik.BoyunaSiraSayisi <= 0 || SelectedDerslik.EnineSiraSayisi <= 0)
+            {
+                return;
+            }
+
+            int totalSeats = SelectedDerslik.BoyunaSiraSayisi * SelectedDerslik.EnineSiraSayisi;
+            for (int i = 0; i < totalSeats; i++)
+            {
+                SeatLayout.Add(new object());
             }
         }
     }

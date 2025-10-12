@@ -1,26 +1,36 @@
 ﻿<Window x:Class="Yazlab1.Views.DerslikYonetimWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Derslik Yönetimi" Height="600" Width="800">
-    <Grid Margin="10">
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Yazlab1.Views"
+        mc:Ignorable="d"
+        Title="Derslik Yönetimi" Height="650" Width="800" WindowStartupLocation="CenterScreen">
+    <Grid Margin="15">
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Column="0" Margin="0,0,10,0">
-            <TextBlock Text="Derslik Bilgileri" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+        <StackPanel Grid.Column="0" Margin="0,0,15,0">
+            <TextBlock Text="Derslik Bilgileri" FontSize="18" FontWeight="Bold" Margin="0,0,0,15"/>
+
             <TextBlock Text="Derslik Kodu:"/>
             <TextBox Text="{Binding DerslikKodu, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,10"/>
+
             <TextBlock Text="Derslik Adı:"/>
             <TextBox Text="{Binding DerslikAdi, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,10"/>
+
             <TextBlock Text="Kapasite:"/>
             <TextBox Text="{Binding Kapasite, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,10"/>
+
             <TextBlock Text="Enine Sıra (Sütun):"/>
             <TextBox Text="{Binding EnineSiraSayisi, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,10"/>
+
             <TextBlock Text="Boyuna Sıra (Satır):"/>
             <TextBox Text="{Binding BoyunaSiraSayisi, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,10"/>
-            <TextBlock Text="Sıra Yapısı (2 şerli, 3 erli):"/>
+
+            <TextBlock Text="Sıra Yapısı (Örn: 2'şerli):"/>
             <TextBox Text="{Binding SiraYapisi, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,20"/>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -28,19 +38,62 @@
                 <Button Content="Güncelle" Width="70" Margin="5" Command="{Binding GuncelleCommand}"/>
                 <Button Content="Sil" Width="70" Margin="5" Command="{Binding SilCommand}"/>
             </StackPanel>
+
+            <Button Content="Excel Veri Yükle" 
+                    FontWeight="Bold" 
+                    Margin="0,30,0,0" 
+                    Height="35"
+                    Background="#FF3D8B3D" 
+                    Foreground="White"
+                    Command="{Binding ExcelEkraninaGitCommand}"/>
         </StackPanel>
 
-        <DockPanel Grid.Column="1">
-            <TextBlock DockPanel.Dock="Top" Text="Bölüm Derslikleri" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
-            <DataGrid ItemsSource="{Binding Derslikler}" 
-                      SelectedItem="{Binding SelectedDerslik}"
-                      AutoGenerateColumns="False" IsReadOnly="True">
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="1.5*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Text="Bölüm Derslikleri" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+
+            <DataGrid Grid.Row="1" 
+                      ItemsSource="{Binding Derslikler}" 
+                      SelectedItem="{Binding SelectedDerslik, Mode=TwoWay}"
+                      AutoGenerateColumns="False" 
+                      IsReadOnly="True"
+                      SelectionMode="Single">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Kod" Binding="{Binding DerslikKodu}" Width="*"/>
                     <DataGridTextColumn Header="Ad" Binding="{Binding DerslikAdi}" Width="2*"/>
                     <DataGridTextColumn Header="Kapasite" Binding="{Binding Kapasite}" Width="*"/>
                 </DataGrid.Columns>
             </DataGrid>
-        </DockPanel>
+
+            <TextBlock Grid.Row="2" Text="Derslik Oturma Düzeni Önizlemesi" FontSize="18" FontWeight="Bold" Margin="0,20,0,10"/>
+
+            <Border Grid.Row="3" BorderBrush="LightGray" BorderThickness="1" Padding="5">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding SeatLayout}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="{Binding SelectedDerslik.BoyunaSiraSayisi}" 
+                                             Columns="{Binding SelectedDerslik.EnineSiraSayisi}"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="Gray" BorderThickness="1" Margin="2" MinWidth="25" MinHeight="25" Background="#FFEBF5FF">
+                                    <Viewbox>
+                                        <TextBlock Text="💺" Opacity="0.5"/>
+                                    </Viewbox>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
+        </Grid>
     </Grid>
 </Window>

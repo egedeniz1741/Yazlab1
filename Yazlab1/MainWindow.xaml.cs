@@ -17,19 +17,17 @@ namespace Yazlab1
         
             string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            using MySqlConnection connection = new(connectionString);
+            try
             {
-                try
-                {
-                    // Bağlantıyı açmayı dene
-                    connection.Open();
-                    MessageBox.Show("MySQL veritabanı bağlantısı başarıyla kuruldu!");
-                }
-                catch (Exception ex)
-                {
-                    // Hata olursa, hatayı göster
-                    MessageBox.Show("Bağlantı BAŞARISIZ OLDU.\n\nHata Mesajı: " + ex.Message);
-                }
+                // Bağlantıyı açmayı dene
+                connection.Open();
+                MessageBox.Show("MySQL veritabanı bağlantısı başarıyla kuruldu!");
+            }
+            catch (Exception ex)
+            {
+                // Hata olursa, hatayı göster
+                MessageBox.Show("Bağlantı BAŞARISIZ OLDU.\n\nHata Mesajı: " + ex.Message);
             }
         }
     }
