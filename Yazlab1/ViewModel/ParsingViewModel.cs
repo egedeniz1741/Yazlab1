@@ -90,7 +90,7 @@ namespace Yazlab1.ViewModel
                         int ogretimUyesiID = GetOrInsertOgretimUyesi(conn, ogretimUyesi);
                         if (DersExists(conn, dersKodu, _aktifKullaniciBolumId)) { continue; } 
 
-                        string insertDers = @"INSERT INTO Dersler (BolumID, OgretimUyesiID, DersKodu, DersAdi, Sinif, DersYapisi) VALUES (@BolumID, @OgretimUyesiID, @DersKodu, @DersAdi, @Sinif, @DersYapisi)"; // DÜZELTME
+                        string insertDers = @"INSERT INTO Dersler (BolumID, OgretimUyesiID, DersKodu, DersAdi, Sinif, DersYapisi) VALUES (@BolumID, @OgretimUyesiID, @DersKodu, @DersAdi, @Sinif, @DersYapisi)"; 
                         using (var cmd = new MySqlCommand(insertDers, conn))
                         {
                             cmd.Parameters.AddWithValue("@BolumID", _aktifKullaniciBolumId); 
