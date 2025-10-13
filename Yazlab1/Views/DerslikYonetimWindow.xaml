@@ -48,6 +48,20 @@
                     Command="{Binding ExcelEkraninaGitCommand}"/>
         </StackPanel>
 
+        <Button Content="Ogrenci Listesi" 
+                    FontWeight="Bold" 
+                    Margin="0,450,15,119" 
+                    Height="35"
+                    Background="#FF3D8B3D" 
+                    Foreground="White"/>
+
+        <Button Content="Ders Listesi" 
+                    FontWeight="Bold" 
+                    Margin="0,500,15,69" 
+                    Height="35"
+                    Background="#FF3D8B3D" 
+                    Foreground="White"/>
+
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -95,5 +109,6 @@
                 </ScrollViewer>
             </Border>
         </Grid>
+
     </Grid>
 </Window>
