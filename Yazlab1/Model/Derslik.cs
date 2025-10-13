@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Yazlab1.Models;
+
 
 namespace Yazlab1.Model
 {
@@ -16,11 +16,11 @@ namespace Yazlab1.Model
 
         public int BolumID { get; set; }
         [ForeignKey("BolumID")]
-        public virtual Bolum Bolum { get; set; }
+        public virtual  Bolum? Bolum { get; set; }
 
-        public string DerslikKodu { get; set; }
+        public required string DerslikKodu { get; set; }
 
-        public string DerslikAdi { get; set; }
+        public required string DerslikAdi { get; set; }
 
         public int Kapasite { get; set; }
 

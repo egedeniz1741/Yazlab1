@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Yazlab1.Model;
 
-namespace Yazlab1.Models
+namespace Yazlab1.Model
 {
     public class Kullanici
     {
@@ -16,10 +16,10 @@ namespace Yazlab1.Models
         public string ?AdSoyad { get; set; }   
         public int RolID { get; set; }
         [ForeignKey("RolID")]
-        public virtual Rol Rol { get; set; }
+        public virtual  Rol? Rol { get; set; }
 
         public int? BolumID { get; set; } 
         [ForeignKey("BolumID")]
-        public virtual Bolum Bolum { get; set; }
+        public virtual  Bolum? Bolum { get; set; }
     }
 }

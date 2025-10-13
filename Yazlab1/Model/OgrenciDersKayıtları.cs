@@ -1,17 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Yazlab1.Models
+namespace Yazlab1.Model
 {
     public class OgrenciDersKayitlari
     {
         
         public int OgrenciID { get; set; }
         [ForeignKey("OgrenciID")]
-        public virtual Ogrenci Ogrenci { get; set; }
+        public virtual required Ogrenci Ogrenci { get; set; }
 
         public int DersID { get; set; }
         [ForeignKey("DersID")]
-        public virtual Ders Ders { get; set; }
+        public virtual required Ders Ders { get; set; }
     }
 }

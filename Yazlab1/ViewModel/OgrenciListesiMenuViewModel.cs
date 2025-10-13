@@ -5,8 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Yazlab1.Data;
-using Yazlab1.Models;
-
+using Yazlab1.Model;
 namespace Yazlab1.ViewModel
 {
     public partial class OgrenciListesiMenuViewModel : ObservableObject

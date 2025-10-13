@@ -1,5 +1,5 @@
 ﻿using System.Windows;
-using Yazlab1.Models;
+using Yazlab1.Model;
 using Yazlab1.ViewModel;
 
 namespace Yazlab1.Views 

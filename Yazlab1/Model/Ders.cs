@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Yazlab1.Models
+namespace Yazlab1.Model
 {
     public class Ders
     {
@@ -10,18 +10,18 @@ namespace Yazlab1.Models
 
         public int BolumID { get; set; }
         [ForeignKey("BolumID")]
-        public virtual Bolum Bolum { get; set; }
+        public virtual required Bolum Bolum { get; set; }
 
         public int? OgretimUyesiID { get; set; }
         [ForeignKey("OgretimUyesiID")]
-        public virtual OgretimUyesi OgretimUyesi { get; set; }
+        public virtual required OgretimUyesi OgretimUyesi { get; set; }
 
-        public string DersKodu { get; set; }
+        public required string DersKodu { get; set; }
 
-        public string DersAdi { get; set; }
+        public required string DersAdi { get; set; }
 
         public int? Sinif { get; set; }
 
-        public string DersYapisi { get; set; } 
+        public required string  DersYapisi { get; set; } 
     }
 }

@@ -30,7 +30,7 @@
             <TextBlock Text="Boyuna Sıra (Satır):"/>
             <TextBox Text="{Binding BoyunaSiraSayisi, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,10"/>
 
-            <TextBlock Text="Sıra Yapısı (Örn: 2'şerli):"/>
+            <TextBlock Text="Sıra Yapısı (1, 2 veya 3):"/>
             <TextBox Text="{Binding SiraYapisi, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,20"/>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -47,20 +47,6 @@
                     Foreground="White"
                     Command="{Binding ExcelEkraninaGitCommand}"/>
         </StackPanel>
-
-        <Button Content="Ogrenci Listesi" 
-                    FontWeight="Bold" 
-                    Margin="0,450,15,119" 
-                    Height="35"
-                    Background="#FF3D8B3D" 
-                    Foreground="White"/>
-
-        <Button Content="Ders Listesi" 
-                    FontWeight="Bold" 
-                    Margin="0,500,15,69" 
-                    Height="35"
-                    Background="#FF3D8B3D" 
-                    Foreground="White"/>
 
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
@@ -96,12 +82,60 @@
                                              Columns="{Binding SelectedDerslik.EnineSiraSayisi}"/>
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
+
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Border BorderBrush="Gray" BorderThickness="1" Margin="2" MinWidth="25" MinHeight="25" Background="#FFEBF5FF">
-                                    <Viewbox>
-                                        <TextBlock Text="💺" Opacity="0.5"/>
-                                    </Viewbox>
+                                <Border BorderBrush="Gray" BorderThickness="1" Margin="2" Background="#FFEBF5FF">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+                                        <TextBlock Text="💺" Margin="1" Opacity="0.5"/>
+
+                                        <TextBlock Text="💺" Margin="1" Opacity="0.5">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding DataContext.SelectedDerslik.SiraYapisi, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Value="1">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+
+                                        <TextBlock Text="💺" Margin="1" Opacity="0.5">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding DataContext.SelectedDerslik.SiraYapisi, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Value="1">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding DataContext.SelectedDerslik.SiraYapisi, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Value="2">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+
+                                        <TextBlock Text="💺" Margin="1" Opacity="0.5">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding DataContext.SelectedDerslik.SiraYapisi, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Value="1">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding DataContext.SelectedDerslik.SiraYapisi, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Value="2">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding DataContext.SelectedDerslik.SiraYapisi, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Value="3">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+
+                                    </StackPanel>
                                 </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -109,6 +143,5 @@
                 </ScrollViewer>
             </Border>
         </Grid>
-
     </Grid>
 </Window>

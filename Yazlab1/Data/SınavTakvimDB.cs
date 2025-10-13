@@ -2,7 +2,7 @@
 using System;
 using System.Configuration;
 using Yazlab1.Model;
-using Yazlab1.Models;
+
 
 namespace Yazlab1.Data
 {

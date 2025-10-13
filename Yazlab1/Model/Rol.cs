@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Yazlab1.Models;
+using Yazlab1.Model;
 
 namespace Yazlab1.Model
 {

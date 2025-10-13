@@ -2,33 +2,49 @@
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows;
 using Yazlab1.Data;
 using Yazlab1.Model;
-using Yazlab1.Models;
+using Yazlab1.Views;
 
 namespace Yazlab1.ViewModel
 {
     public partial class DerslikYonetimViewModel : ObservableObject
     {
-        private readonly SinavTakvimDbContext _dbContext = new SinavTakvimDbContext();
+        private readonly SinavTakvimDbContext _dbContext = new();
+        private readonly Kullanici _aktifKullanici;
         private readonly int _aktifKullaniciBolumId;
 
-        [ObservableProperty] private string _derslikKodu;
-        [ObservableProperty] private string _derslikAdi;
-        [ObservableProperty] private int _kapasite;
-        [ObservableProperty] private int _enineSiraSayisi;
-        [ObservableProperty] private int _boyunaSiraSayisi;
-        [ObservableProperty] private int _siraYapisi;
-        [ObservableProperty] private Derslik _selectedDerslik;
+        [ObservableProperty]
+        private string _derslikKodu;
+
+        [ObservableProperty]
+        private string _derslikAdi;
+
+        [ObservableProperty]
+        private int _kapasite;
+
+        [ObservableProperty]
+        private int _enineSiraSayisi;
+
+        [ObservableProperty]
+        private int _boyunaSiraSayisi;
+
+        
+        [ObservableProperty]
+        private int _siraYapisi;
+
+        [ObservableProperty]
+        private Derslik _selectedDerslik;
 
         public ObservableCollection<Derslik> Derslikler { get; set; }
         public ObservableCollection<object> SeatLayout { get; set; }
 
         public DerslikYonetimViewModel(Kullanici aktifKullanici)
         {
+            _aktifKullanici = aktifKullanici;
             _aktifKullaniciBolumId = aktifKullanici.BolumID.Value;
+
             Derslikler = new ObservableCollection<Derslik>();
             SeatLayout = new ObservableCollection<object>();
             DerslikleriYukle();
@@ -46,17 +62,16 @@ namespace Yazlab1.ViewModel
             }
         }
 
+        
         [RelayCommand]
         private void Ekle()
         {
-         
             if (string.IsNullOrWhiteSpace(DerslikKodu) || string.IsNullOrWhiteSpace(DerslikAdi))
             {
                 MessageBox.Show("Derslik Kodu ve Adı alanları boş bırakılamaz.");
                 return;
             }
 
-          
             bool isDuplicate = _dbContext.Derslikler.Any(d => d.DerslikKodu == DerslikKodu && d.BolumID == _aktifKullaniciBolumId);
             if (isDuplicate)
             {
@@ -64,16 +79,8 @@ namespace Yazlab1.ViewModel
                 return;
             }
 
-          
-           
+            
 
-            if (SiraYapisi * EnineSiraSayisi * BoyunaSiraSayisi != Kapasite)
-            {
-                MessageBox.Show("Verdiğiniz sıra bilgileri (Sıra Yapısı * Enine Sıra * Boyuna Sıra) kapasite ile eşleşmiyor lütfen düzeltiniz");
-                return;
-            }
-
-          
             var yeniDerslik = new Derslik
             {
                 BolumID = _aktifKullaniciBolumId,
@@ -87,11 +94,10 @@ namespace Yazlab1.ViewModel
 
             _dbContext.Derslikler.Add(yeniDerslik);
             _dbContext.SaveChanges();
-            DerslikleriYukle(); // Listeyi yenile
+            DerslikleriYukle();
             MessageBox.Show("Derslik başarıyla eklendi.");
         }
 
-        // Guncelle metodu aynı, SelectedDerslik'e bakar
         [RelayCommand]
         private void Guncelle()
         {
@@ -100,10 +106,30 @@ namespace Yazlab1.ViewModel
                 MessageBox.Show("Lütfen güncellemek için bir derslik seçin.");
                 return;
             }
-            // ... (Guncelle kodunun geri kalanı doğru)
+
+            var dbDerslik = _dbContext.Derslikler.Find(SelectedDerslik.DerslikID);
+            if (dbDerslik != null)
+            {
+                if (dbDerslik.DerslikKodu != DerslikKodu && _dbContext.Derslikler.Any(d => d.DerslikKodu == DerslikKodu && d.BolumID == _aktifKullaniciBolumId))
+                {
+                    MessageBox.Show("Girmek istediğiniz yeni derslik kodu başka bir dersliğe aittir.");
+                    return;
+                }
+
+             
+                dbDerslik.DerslikKodu = DerslikKodu;
+                dbDerslik.DerslikAdi = DerslikAdi;
+                dbDerslik.Kapasite = Kapasite;
+                dbDerslik.EnineSiraSayisi = EnineSiraSayisi;
+                dbDerslik.BoyunaSiraSayisi = BoyunaSiraSayisi;
+                dbDerslik.SiraYapisi = SiraYapisi;
+
+                _dbContext.SaveChanges();
+                DerslikleriYukle();
+                MessageBox.Show("Derslik başarıyla güncellendi.");
+            }
         }
 
-        // Sil metodu aynı, SelectedDerslik'e bakar
         [RelayCommand]
         private void Sil()
         {
@@ -112,25 +138,51 @@ namespace Yazlab1.ViewModel
                 MessageBox.Show("Lütfen silmek için bir derslik seçin.");
                 return;
             }
-            // ... (Sil kodunun geri kalanı doğru)
-        }
 
-        // ... (OnSelectedDerslikChanged ve GenerateSeatLayout aynı) ...
-
-        /// <summary>
-        /// "2'şerli", "3 lu", "1" gibi metinlerden sayıyı çıkaran yardımcı metot.
-        /// </summary>
-        private int ParseSiraYapisi(string text)
-        {
-            if (string.IsNullOrWhiteSpace(text)) return 0;
-
-            // Metnin başındaki sayıları bulur (örn: "2'şerli" -> "2")
-            var match = Regex.Match(text, @"^\d+");
-            if (match.Success && int.TryParse(match.Value, out int sayi))
+            var dbDerslik = _dbContext.Derslikler.Find(SelectedDerslik.DerslikID);
+            if (dbDerslik != null)
             {
-                return sayi;
+                _dbContext.Derslikler.Remove(dbDerslik);
+                _dbContext.SaveChanges();
+                DerslikleriYukle();
+                MessageBox.Show("Derslik başarıyla silindi.");
             }
-            return 0; // Geçerli bir sayı bulunamazsa
         }
+
+        [RelayCommand]
+        private void ExcelEkraninaGit()
+        {
+            ParsingWindow parsingWindow = new(_aktifKullanici);
+            parsingWindow.Show();
+        }
+
+        partial void OnSelectedDerslikChanged(Derslik value)
+        {
+            if (value != null)
+            {
+                DerslikKodu = value.DerslikKodu;
+                DerslikAdi = value.DerslikAdi;
+                Kapasite = value.Kapasite;
+                EnineSiraSayisi = value.EnineSiraSayisi;
+                BoyunaSiraSayisi = value.BoyunaSiraSayisi;
+                SiraYapisi = value.SiraYapisi;
+                GenerateSeatLayout();
+            }
+        }
+
+        private void GenerateSeatLayout()
+        {
+            SeatLayout.Clear();
+            if (SelectedDerslik == null || SelectedDerslik.BoyunaSiraSayisi <= 0 || SelectedDerslik.EnineSiraSayisi <= 0)
+            {
+                return;
+            }
+            int totalSeats = SelectedDerslik.BoyunaSiraSayisi * SelectedDerslik.EnineSiraSayisi;
+            for (int i = 0; i < totalSeats; i++)
+            {
+                SeatLayout.Add(new object());
+            }
+        }
+
     }
 }

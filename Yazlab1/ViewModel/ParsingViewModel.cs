@@ -5,25 +5,20 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using Yazlab1.Models;
+using Yazlab1.Model;
 using ClosedXML.Excel;
 using System.Configuration;
 using MySql.Data.MySqlClient;
 
 namespace Yazlab1.ViewModel
 {
-    public partial class ParsingViewModel : ObservableObject
+    public partial class ParsingViewModel(Kullanici aktifKullanici) : ObservableObject
     {
-        private readonly int _aktifKullaniciBolumId;
+        private readonly int _aktifKullaniciBolumId = aktifKullanici.BolumID.Value;
         private readonly string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
         [ObservableProperty] private bool _isBusy = false;
-        [ObservableProperty] private string _statusMessage;
-
-        public ParsingViewModel(Kullanici aktifKullanici)
-        {
-            _aktifKullaniciBolumId = aktifKullanici.BolumID.Value;
-        }
+        [ObservableProperty] private string? _statusMessage;
 
         #region Ders Yükleme Komutu
         [RelayCommand]

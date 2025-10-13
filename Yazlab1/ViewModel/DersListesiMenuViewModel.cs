@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Yazlab1.Data;
 using Yazlab1.Model;
-using Yazlab1.Models;
+
 
 namespace Yazlab1.ViewModel
 {

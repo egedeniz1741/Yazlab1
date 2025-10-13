@@ -11,7 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using Yazlab1.Models;
+using Yazlab1.Model;
 
 namespace Yazlab1
 {
