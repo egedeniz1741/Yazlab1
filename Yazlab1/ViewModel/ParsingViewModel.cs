@@ -68,7 +68,7 @@ namespace Yazlab1.ViewModel
         #endregion
 
        
-        #region Sizin Ders Listesi Metotlarınız
+        #region Ders Listesi
         private void ParseAndInsertDersListesi(string filePath)
         {
             using (var workbook = new XLWorkbook(filePath))
@@ -135,7 +135,7 @@ namespace Yazlab1.ViewModel
         }
         #endregion
 
-        #region 
+        #region Ogrenci Listesi
         private void ParseAndInsertOgrenciler(string filePath)
         {
             using (var workbook = new XLWorkbook(filePath))

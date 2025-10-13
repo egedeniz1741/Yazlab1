@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Yazlab1.Models;
 
 namespace Yazlab1
 {
@@ -19,7 +20,7 @@ namespace Yazlab1
     /// </summary>
     public partial class OgrenciListesiMenu : Window
     {
-        public OgrenciListesiMenu()
+        public OgrenciListesiMenu(Kullanici aktifKullanici)
         {
             InitializeComponent();
         }

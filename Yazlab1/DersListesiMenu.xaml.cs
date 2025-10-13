@@ -11,6 +11,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Yazlab1.Models;
+using Yazlab1.ViewModel;
 
 namespace Yazlab1
 {
@@ -19,9 +21,12 @@ namespace Yazlab1
     /// </summary>
     public partial class DersListesiMenu : Window
     {
-        public DersListesiMenu()
+        public DersListesiMenu(Kullanici aktifKullanici)
         {
             InitializeComponent();
+
+            this.Title = "Ders Listesi Menusu " + aktifKullanici.Bolum.BolumAdi;
+            this.DataContext = new DersListesiMenuViewModel(aktifKullanici);
         }
     }
 }
