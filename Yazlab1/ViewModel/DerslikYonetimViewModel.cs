@@ -156,6 +156,13 @@ namespace Yazlab1.ViewModel
             parsingWindow.Show();
         }
 
+        [RelayCommand]
+        private void OgrenciListesiEkraninaGit()
+        {
+            var ogrenciListesiMenu = new OgrenciListesiMenu(_aktifKullanici);
+            ogrenciListesiMenu.Show();
+        }
+
         partial void OnSelectedDerslikChanged(Derslik value)
         {
             if (value != null)

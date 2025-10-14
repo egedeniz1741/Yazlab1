@@ -5,8 +5,91 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Yazlab1"
         mc:Ignorable="d"
-        Title="OgrenciListesiMenu" Height="450" Width="800">
-    <Grid>
-        
+        Title="OgrenciListesiMenu" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock Text="Öğrenci Numarası Seçiniz:" 
+                       FontSize="16" 
+                       FontWeight="Bold" 
+                       Margin="0,0,0,10"/>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <ComboBox x:Name="OgrenciListesiComboBox" Grid.Column="0"
+                          ItemsSource="{Binding OgrenciNumaralari}"
+                          SelectedItem="{Binding SecilenOgrenciNumarasi, UpdateSourceTrigger=PropertyChanged}"
+                          FontSize="14"
+                          Height="35"
+                          IsEditable="True"
+                          Margin="0,0,10,0"/>
+
+                <!-- Click KALDIRILDI, Command kullanıldı -->
+                <Button x:Name="OgrenciListesiButton" Grid.Column="1"
+                        Content="Getir" 
+                        Command="{Binding OgrenciBilgileriniGetirCommand}"
+                        Width="100" 
+                        Height="35"
+                        FontSize="14"/>
+            </Grid>
+        </StackPanel>
+
+        <!-- Öğrenci Bilgileri -->
+        <Border Grid.Row="1" 
+                BorderBrush="Gray" 
+                BorderThickness="1" 
+                CornerRadius="5" 
+                Padding="15"
+                Margin="0,0,0,20"
+                Background="#F5F5F5">
+            <StackPanel>
+                <TextBlock x:Name="txtOgrenciBilgi" 
+                           FontSize="16" 
+                           FontWeight="Bold"
+                           Foreground="#333"
+                           Text="{Binding OgrenciBilgi}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Ders Listesi -->
+        <GroupBox Grid.Row="2" 
+                  Header="Aldığı Dersler" 
+                  FontSize="14" 
+                  FontWeight="Bold">
+            <ListBox ItemsSource="{Binding Dersler}" 
+                     FontSize="13"
+                     Margin="5">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="5">
+                            <TextBlock FontWeight="Bold" FontSize="14"
+                                     Text="{Binding DersAdi}"/>
+                            <TextBlock Foreground="Gray" FontSize="12" Margin="0,3,0,0">
+                                <Run Text="Kod:"/>
+                                <Run Text="{Binding DersKodu}" FontWeight="SemiBold"/>
+                            </TextBlock>
+                            <TextBlock Foreground="DarkBlue" FontSize="12" Margin="0,3,0,0">
+                                <Run Text="Yapı:"/>
+                                <Run Text="{Binding DersYapisi}"/>
+                            </TextBlock>
+                            <TextBlock Foreground="DarkGreen" FontSize="12" Margin="0,3,0,0">
+                                <Run Text="Sınıf:"/>
+                                <Run Text="{Binding Sinif}"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </GroupBox>
     </Grid>
 </Window>

@@ -46,6 +46,13 @@
                     Background="#FF3D8B3D" 
                     Foreground="White"
                     Command="{Binding ExcelEkraninaGitCommand}"/>
+            <Button x:Name="btnOgrenciListesi" 
+                Content="Öğrenci Listesi" 
+                Width="150" 
+                Height="40"
+                FontSize="14"
+                Command="{Binding OgrenciListesiEkraninaGitCommand}"/>
+
         </StackPanel>
 
         <Grid Grid.Column="1">

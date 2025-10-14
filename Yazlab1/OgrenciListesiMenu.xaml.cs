@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Yazlab1.Model;
+using Yazlab1.ViewModel;
 
 namespace Yazlab1
 {
@@ -23,6 +24,8 @@ namespace Yazlab1
         public OgrenciListesiMenu(Kullanici aktifKullanici)
         {
             InitializeComponent();
+
+            this.DataContext = new OgrenciListesiMenuViewModel(aktifKullanici);
         }
     }
 }
