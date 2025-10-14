@@ -157,12 +157,20 @@ namespace Yazlab1.ViewModel
         }
 
         [RelayCommand]
-        private void OgrenciListesiEkraninaGit()
-        {
-            var ogrenciListesiMenu = new OgrenciListesiMenu(_aktifKullanici);
-            ogrenciListesiMenu.Show();
-        }
 
+
+        private void OgrenciMenuEkraninaGit()
+        {
+            
+            OgrenciListesiMenu ogrenciMenu = new OgrenciListesiMenu(_aktifKullanici);
+            ogrenciMenu.Show();
+        }
+        [RelayCommand]
+        private void DersMenuEkraninaGit()
+        {
+            DersListesiMenu dersMenu = new DersListesiMenu(_aktifKullanici);
+            dersMenu.Show();
+        }
         partial void OnSelectedDerslikChanged(Derslik value)
         {
             if (value != null)

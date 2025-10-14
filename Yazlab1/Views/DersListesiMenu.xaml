@@ -1,0 +1,41 @@
+﻿<Window x:Class="Yazlab1.Views.DersListesiMenu"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Yazlab1.Views"
+        mc:Ignorable="d"
+        Title="Ders Listesi ve Öğrenci Görüntüleme" Height="500" Width="800"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="15">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="1.5*"/>
+        </Grid.ColumnDefinitions>
+
+        <GroupBox Grid.Column="0" Header="Bölüm Dersleri" FontSize="14" FontWeight="Bold" Margin="0,0,10,0">
+            <DataGrid ItemsSource="{Binding TumDersler}"
+                      SelectedItem="{Binding SecilenDers, Mode=TwoWay}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      SelectionMode="Single">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Ders Kodu" Binding="{Binding DersKodu}" Width="Auto"/>
+                    <DataGridTextColumn Header="Ders Adı" Binding="{Binding DersAdi}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+
+        <GroupBox Grid.Column="1" Header="Dersi Alan Öğrenciler" FontSize="14" FontWeight="Bold">
+            <DataGrid ItemsSource="{Binding DerstekiOgrenciler}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Öğrenci No" Binding="{Binding OgrenciNo}" Width="Auto"/>
+                    <DataGridTextColumn Header="Adı Soyadı" Binding="{Binding AdSoyad}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+
+    </Grid>
+</Window>

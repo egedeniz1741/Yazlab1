@@ -8,10 +8,10 @@ namespace Yazlab1.Model
         
         public int OgrenciID { get; set; }
         [ForeignKey("OgrenciID")]
-        public virtual required Ogrenci Ogrenci { get; set; }
+        public virtual  Ogrenci Ogrenci { get; set; }
 
         public int DersID { get; set; }
         [ForeignKey("DersID")]
-        public virtual required Ders Ders { get; set; }
+        public virtual  Ders Ders { get; set; }
     }
 }

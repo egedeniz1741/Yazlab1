@@ -10,18 +10,18 @@ namespace Yazlab1.Model
 
         public int BolumID { get; set; }
         [ForeignKey("BolumID")]
-        public virtual required Bolum Bolum { get; set; }
+        public virtual  Bolum Bolum { get; set; }
 
         public int? OgretimUyesiID { get; set; }
         [ForeignKey("OgretimUyesiID")]
-        public virtual required OgretimUyesi OgretimUyesi { get; set; }
+        public virtual  OgretimUyesi OgretimUyesi { get; set; }
 
-        public required string DersKodu { get; set; }
+        public  string DersKodu { get; set; }
 
-        public required string DersAdi { get; set; }
+        public  string DersAdi { get; set; }
 
         public int? Sinif { get; set; }
 
-        public required string  DersYapisi { get; set; } 
+        public  string  DersYapisi { get; set; } 
     }
 }

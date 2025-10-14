@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Yazlab1.Views"
         mc:Ignorable="d"
-        Title="Derslik Yönetimi" Height="650" Width="800" WindowStartupLocation="CenterScreen">
+        Title="Derslik Yönetimi" Height="700" Width="850" WindowStartupLocation="CenterScreen">
     <Grid Margin="15">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="280"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
@@ -30,7 +30,7 @@
             <TextBlock Text="Boyuna Sıra (Satır):"/>
             <TextBox Text="{Binding BoyunaSiraSayisi, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,10"/>
 
-            <TextBlock Text="Sıra Yapısı (1, 2 veya 3):"/>
+            <TextBlock Text="Sıra Yapısı (1, 2, 3 veya 4):"/>
             <TextBox Text="{Binding SiraYapisi, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,20"/>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -39,19 +39,33 @@
                 <Button Content="Sil" Width="70" Margin="5" Command="{Binding SilCommand}"/>
             </StackPanel>
 
-            <Button Content="Excel Veri Yükle" 
-                    FontWeight="Bold" 
-                    Margin="0,30,0,0" 
-                    Height="35"
-                    Background="#FF3D8B3D" 
-                    Foreground="White"
-                    Command="{Binding ExcelEkraninaGitCommand}"/>
-            <Button x:Name="btnOgrenciListesi" 
-                Content="Öğrenci Listesi" 
-                Width="150" 
-                Height="40"
-                FontSize="14"
-                Command="{Binding OgrenciListesiEkraninaGitCommand}"/>
+            <GroupBox Header="Diğer İşlemler" Margin="0,30,0,0" FontWeight="Bold">
+                <StackPanel>
+                    <Button Content="Excel Veri Yükle" 
+                            FontWeight="SemiBold" 
+                            Margin="5" 
+                            Height="35"
+                            Background="#FF3D8B3D" 
+                            Foreground="White"
+                            Command="{Binding ExcelEkraninaGitCommand}"/>
+
+                    <Button Content="Öğrenciye Göre Ders Listele" 
+                            FontWeight="SemiBold" 
+                            Margin="5" 
+                            Height="35"
+                            Background="#007ACC" 
+                            Foreground="White"
+                            Command="{Binding OgrenciMenuEkraninaGitCommand}"/>
+
+                    <Button Content="Derse Göre Öğrenci Listele" 
+                            FontWeight="SemiBold" 
+                            Margin="5" 
+                            Height="35"
+                            Background="#6F3D8B" 
+                            Foreground="White"
+                            Command="{Binding DersMenuEkraninaGitCommand}"/>
+                </StackPanel>
+            </GroupBox>
 
         </StackPanel>
 
@@ -89,14 +103,11 @@
                                              Columns="{Binding SelectedDerslik.EnineSiraSayisi}"/>
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
-
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Border BorderBrush="Gray" BorderThickness="1" Margin="2" Background="#FFEBF5FF">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-
                                         <TextBlock Text="💺" Margin="1" Opacity="0.5"/>
-
                                         <TextBlock Text="💺" Margin="1" Opacity="0.5">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
@@ -108,7 +119,6 @@
                                                 </Style>
                                             </TextBlock.Style>
                                         </TextBlock>
-
                                         <TextBlock Text="💺" Margin="1" Opacity="0.5">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
@@ -123,7 +133,6 @@
                                                 </Style>
                                             </TextBlock.Style>
                                         </TextBlock>
-
                                         <TextBlock Text="💺" Margin="1" Opacity="0.5">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
@@ -141,7 +150,6 @@
                                                 </Style>
                                             </TextBlock.Style>
                                         </TextBlock>
-
                                     </StackPanel>
                                 </Border>
                             </DataTemplate>

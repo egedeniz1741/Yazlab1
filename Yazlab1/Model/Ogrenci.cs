@@ -17,8 +17,8 @@ namespace Yazlab1.Model
 
         public int BolumID { get; set; }
         [ForeignKey("BolumID")]
-        public virtual required Bolum Bolum { get; set; }
+        public virtual  Bolum Bolum { get; set; }
 
-        public virtual required ICollection<OgrenciDersKayitlari> DersKayitlari { get; set; }
+        public virtual  ICollection<OgrenciDersKayitlari> DersKayitlari { get; set; }
     }
 }
