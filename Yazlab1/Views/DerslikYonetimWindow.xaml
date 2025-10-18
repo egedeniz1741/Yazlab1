@@ -64,6 +64,14 @@
                             Background="#6F3D8B" 
                             Foreground="White"
                             Command="{Binding DersMenuEkraninaGitCommand}"/>
+
+                    <Button Content="Sınav Programı Oluştur" 
+                            FontWeight="SemiBold" 
+                            Margin="5" 
+                            Height="35"
+                            Background="#D32F2F" 
+                            Foreground="White"
+                            Command="{Binding SinavProgramiEkraninaGitCommand}"/>
                 </StackPanel>
             </GroupBox>
 

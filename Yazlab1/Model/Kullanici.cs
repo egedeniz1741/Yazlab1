@@ -20,6 +20,6 @@ namespace Yazlab1.Model
 
         public int? BolumID { get; set; } 
         [ForeignKey("BolumID")]
-        public virtual  Bolum? Bolum { get; set; }
+        public virtual  Bolum Bolum { get; set; }
     }
 }
