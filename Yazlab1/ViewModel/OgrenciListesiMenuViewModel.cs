@@ -31,6 +31,12 @@ namespace Yazlab1.ViewModel
         public OgrenciListesiMenuViewModel(Kullanici aktifKullanici)
         {
             _aktifKullaniciBolumId = aktifKullanici.BolumID.Value;
+
+            if (_aktifKullaniciBolumId == 0)
+            {
+                _aktifKullaniciBolumId = 1; 
+            }
+
             Dersler = new ObservableCollection<DersDto>();
             OgrenciNumaralariniYukle();
         }

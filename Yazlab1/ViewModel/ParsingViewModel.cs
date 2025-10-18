@@ -25,6 +25,11 @@ namespace Yazlab1.ViewModel
         public ParsingViewModel(Kullanici aktifKullanici)
         {
             _aktifKullaniciBolumId = aktifKullanici.BolumID.Value;
+
+            if (_aktifKullaniciBolumId == 0)
+            {
+                _aktifKullaniciBolumId = 1;
+            }
         }
 
         #region Ders Yükleme

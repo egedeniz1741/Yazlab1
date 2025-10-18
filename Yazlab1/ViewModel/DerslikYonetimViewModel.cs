@@ -34,6 +34,13 @@ namespace Yazlab1.ViewModel
         {
             _aktifKullanici = aktifKullanici;
             _aktifKullaniciBolumId = aktifKullanici.BolumID.Value;
+
+            if (_aktifKullaniciBolumId == 0)
+            {
+                _aktifKullaniciBolumId = 1; // kotu cozum ama baska turlu yapamadim valla 
+            }
+
+
             Derslikler = new ObservableCollection<Derslik>();
             SeatLayout = new ObservableCollection<object>();
             DerslikleriYukle();

@@ -70,6 +70,12 @@ namespace Yazlab1.ViewModel
         {
             _aktifKullaniciBolumId = aktifKullanici.BolumID.Value;
             _aktifKullaniciBolumAdi = aktifKullanici.Bolum.BolumAdi;
+
+            if (_aktifKullaniciBolumId == 0)
+            {
+                _aktifKullaniciBolumId = 1;
+            }
+
             DahilEdilecekDersler = new ObservableCollection<DersSecici>();
             Gunler = new ObservableCollection<bool> { true, true, true, true, true, false, false };
             DersleriYukle();

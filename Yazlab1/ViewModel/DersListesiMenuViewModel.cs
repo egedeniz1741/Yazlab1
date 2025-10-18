@@ -29,6 +29,12 @@ namespace Yazlab1.ViewModel
             TumDersler = new ObservableCollection<Ders>();
             DerstekiOgrenciler = new ObservableCollection<Ogrenci>();
 
+            if (_aktifKullaniciBolumId == 0)
+            {
+                _aktifKullaniciBolumId = 1; 
+            }
+
+
             DersleriYukle();
         }
 

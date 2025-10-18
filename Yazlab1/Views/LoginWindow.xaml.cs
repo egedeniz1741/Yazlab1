@@ -56,7 +56,7 @@ namespace Yazlab1.Views
                         }
                         else if (userrolu.Rol.RolAdi == "Admin") 
                         {
-                            MainWindow mainWindow = new();
+                            MainWindow mainWindow = new MainWindow(user);
                             mainWindow.Show();
                             this.Close();
 
@@ -79,5 +79,6 @@ namespace Yazlab1.Views
                 ErrorMessageTextBlock.Text = "Bir hata oluştu: " + ex.Message;
             }
         }
+
     }
 }
