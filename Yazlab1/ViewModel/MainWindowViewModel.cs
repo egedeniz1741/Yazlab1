@@ -17,25 +17,24 @@ namespace Yazlab1.ViewModel
 {
     public partial class MainWindowViewModel : ObservableObject
     {
-        private readonly Kullanici _aktifAdmin; // Admin bilgilerini saklamak için
+        private readonly Kullanici _aktifAdmin; 
         private readonly string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
-        // === Özellikler (Properties) ===
-        // Kullanıcı ekleme formu için
+      
         [ObservableProperty] private string _newUserEmail;
         [ObservableProperty] private string _newUserAdSoyad;
-        [ObservableProperty] private Bolum _selectedBolum; // ComboBox'tan seçilen bölüm
+        [ObservableProperty] private Bolum _selectedBolum; 
 
-        // Bölüm listesi (ComboBox için)
+        
         public ObservableCollection<Bolum> BolumlerListesi { get; set; }
 
-        // === Constructor ===
+      
         public MainWindowViewModel(Kullanici aktifKullanici)
         {
             _aktifAdmin = aktifKullanici;
             BolumlerListesi = new ObservableCollection<Bolum>();
 
-            // Veritabanından bölümleri çekip ComboBox'ı doldur
+            
             LoadBolumler();
         }
 
@@ -78,7 +77,6 @@ namespace Yazlab1.ViewModel
         {
             if (string.IsNullOrEmpty(bolumAdi)) return;
 
-            // Hafızaya yüklediğimiz BolumlerListesi'nden hedef bölümü bul
             var targetBolum = BolumlerListesi.FirstOrDefault(b => b.BolumAdi == bolumAdi);
 
             if (targetBolum == null)
@@ -87,16 +85,15 @@ namespace Yazlab1.ViewModel
                 return;
             }
 
-            // ÖNEMLİ: Adminin yetkileriyle, seçilen bölümün kimliğine bürünüyoruz.
-            // Geçici bir "fake" kullanıcı nesnesi oluşturup DerslikYonetimWindow'a gönderiyoruz.
+          
             var fakeCoordinator = new Kullanici
             {
                 KullaniciID = _aktifAdmin.KullaniciID,
                 AdSoyad = _aktifAdmin.AdSoyad,
                 RolID = _aktifAdmin.RolID,
-                Rol = _aktifAdmin.Rol, // Admin rolünü korur
-                BolumID = targetBolum.BolumID, // Ama hedef bölümün ID'sini alır
-                Bolum = targetBolum // Ve hedef bölümün nesnesini alır
+                Rol = _aktifAdmin.Rol, 
+                BolumID = targetBolum.BolumID,
+                Bolum = targetBolum 
             };
 
             DerslikYonetimWindow derslikWindow = new DerslikYonetimWindow(fakeCoordinator);
@@ -135,9 +132,7 @@ namespace Yazlab1.ViewModel
                         koordinatorRolID = Convert.ToInt32(result);
                     }
 
-                    // 2. Yeni kullanıcıyı ekle
-                    // TODO: Şifreyi burada hash'lemek en doğrusudur.
-                    // Örn: string hashedPassword = HashPassword(password);
+                
                     string insertQuery = @"INSERT INTO Kullanicilar (Eposta, SifreHash, AdSoyad, RolID, BolumID) 
                                          VALUES (@Eposta, @Sifre, @AdSoyad, @RolID, @BolumID)";
                     using (var cmdInsert = new MySqlCommand(insertQuery, conn))
@@ -159,7 +154,7 @@ namespace Yazlab1.ViewModel
             }
             catch (MySqlException ex)
             {
-                if (ex.Number == 1062) // Duplicate entry
+                if (ex.Number == 1062) 
                     MessageBox.Show("Bu e-posta adresi zaten kullanılıyor.", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
                 else
                     MessageBox.Show($"Veritabanı hatası: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);

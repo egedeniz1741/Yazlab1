@@ -1,7 +1,7 @@
-﻿using ClosedXML.Excel; // Excel için
+﻿using ClosedXML.Excel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Win32; // SaveFileDialog için
+using Microsoft.Win32;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -12,24 +12,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using Yazlab1.Model;
-// Models namespace'i
-using Yazlab1.Views; // Views namespace'i (Pencere açmak için)
+using Yazlab1.Views;
 
 namespace Yazlab1.ViewModel
 {
     #region Yardımcı Sınıflar
-   
+
     public class SinavDetay
     {
         public Ders Ders { get; set; }
         public List<Ogrenci> Ogrenciler { get; set; } = new List<Ogrenci>();
         public int OgrenciSayisi => Ogrenciler.Count;
-        public int SinavSuresi { get; set; } // Ders bazlı sınav süresi
+        public int SinavSuresi { get; set; }
     }
 
-    /// <summary>
-    /// Oluşturulan takvimdeki her bir sınavı temsil eder.
-    /// </summary>
     public class AtanmisSinav
     {
         public SinavDetay SinavDetay { get; set; }
@@ -38,15 +34,11 @@ namespace Yazlab1.ViewModel
         public TimeSpan BitisSaati { get; set; }
         public List<Derslik> AtananDerslikler { get; set; } = new List<Derslik>();
 
-        // Derslik kodlarını birleştirilmiş olarak döndüren özellik
         public string DerslikKodlariString => AtananDerslikler != null && AtananDerslikler.Any()
                                               ? string.Join("-", AtananDerslikler.Select(d => d.DerslikKodu))
                                               : string.Empty;
     }
 
-    /// <summary>
-    /// Excel raporundaki her bir satırı temsil eder.
-    /// </summary>
     public class ExcelRaporSatiri
     {
         public string Tarih { get; set; }
@@ -57,17 +49,13 @@ namespace Yazlab1.ViewModel
     }
     #endregion
 
-    /// <summary>
-    /// Sınav Programı Oluşturma penceresinin tüm mantığını yöneten ViewModel.
-    /// </summary>
-    public partial class SinavProgramiOlusturmaViewModel : ObservableObject // partial olduğundan emin olun
+    public partial class SinavProgramiOlusturmaViewModel : ObservableObject
     {
         private readonly string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
         private readonly int _aktifKullaniciBolumId;
         private readonly string _aktifKullaniciBolumAdi;
-        private List<AtanmisSinav> _sonOlusturulanTakvim; // Başarılı takvimi saklamak için
+        private List<AtanmisSinav> _sonOlusturulanTakvim;
 
-        // Arayüze bağlı kısıt özellikleri
         [ObservableProperty] private DateTime _sinavBaslangicTarihi = DateTime.Today;
         [ObservableProperty] private DateTime _sinavBitisTarihi = DateTime.Today.AddDays(14);
         [ObservableProperty] private string _sinavTuru = "Vize";
@@ -75,16 +63,13 @@ namespace Yazlab1.ViewModel
         [ObservableProperty] private int _sinavBitisSaati = 17;
         [ObservableProperty] private int _varsayilanSinavSuresi = 75;
         [ObservableProperty] private int _varsayilanBeklemeSuresi = 15;
-        [ObservableProperty] private bool _isBusy = false; // İşlem durumu
+        [ObservableProperty] private bool _isBusy = false;
 
-        // Oturma planı butonunun aktifliğini kontrol eden özellik
         [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(OturmaPlanlamasinaGitCommand))] // Bu komutun CanExecute'ini güncelle
+        [NotifyCanExecuteChangedFor(nameof(OturmaPlanlamasinaGitCommand))]
         private bool _isTakvimOlusturuldu = false;
 
-        // Arayüzdeki ders listesi DataGrid'ine bağlı koleksiyon
         public ObservableCollection<DersSecici> DahilEdilecekDersler { get; set; }
-        // Arayüzdeki gün CheckBox'larına bağlı koleksiyon
         public ObservableCollection<bool> Gunler { get; set; }
 
         public SinavProgramiOlusturmaViewModel(Kullanici aktifKullanici)
@@ -92,19 +77,16 @@ namespace Yazlab1.ViewModel
             _aktifKullaniciBolumId = aktifKullanici?.BolumID ?? throw new ArgumentNullException("Aktif kullanıcı BolumID'si boş olamaz.");
             _aktifKullaniciBolumAdi = aktifKullanici?.Bolum?.BolumAdi ?? "Bilinmeyen Bölüm";
             DahilEdilecekDersler = new ObservableCollection<DersSecici>();
-            Gunler = new ObservableCollection<bool> { true, true, true, true, true, false, false }; // Pzt-Cuma seçili
+            Gunler = new ObservableCollection<bool> { true, true, true, true, true, false, false };
             DersleriYukle();
         }
 
-        /// <summary>
-        /// Veritabanından bölümdeki tüm dersleri çeker ve arayüzdeki listeyi günceller.
-        /// </summary>
         private async void DersleriYukle()
         {
             await Task.Run(() =>
             {
                 var geciciDersListesi = new List<DersSecici>();
-                int varsayilanSure = 75; // Varsayılan değer
+                int varsayilanSure = 75;
                 Application.Current.Dispatcher.Invoke(() => { varsayilanSure = VarsayilanSinavSuresi; });
 
                 try
@@ -121,7 +103,7 @@ namespace Yazlab1.ViewModel
                                 while (reader.Read())
                                 {
                                     var ders = new Ders { DersID = reader.GetInt32("DersID"), DersKodu = reader.GetString("DersKodu"), DersAdi = reader.GetString("DersAdi") };
-                                    geciciDersListesi.Add(new DersSecici(ders, varsayilanSure)); // Varsayılan süre ile oluştur
+                                    geciciDersListesi.Add(new DersSecici(ders, varsayilanSure));
                                 }
                             }
                         }
@@ -139,15 +121,13 @@ namespace Yazlab1.ViewModel
             });
         }
 
-        /// <summary>
-        /// Sınav programı oluşturma algoritmasını başlatan komut.
-        /// </summary>
         [RelayCommand]
         private async Task ProgramiOlustur()
         {
             IsBusy = true;
-            IsTakvimOlusturuldu = false; // Başlangıçta butonu pasif yap
-            _sonOlusturulanTakvim = null; // Önceki takvimi temizle
+            IsTakvimOlusturuldu = false;
+            _sonOlusturulanTakvim = null;
+
             try
             {
                 var secilenDersSeciciler = DahilEdilecekDersler.Where(d => d.IsSelected).ToList();
@@ -169,10 +149,10 @@ namespace Yazlab1.ViewModel
 
                 if (takvim != null && takvim.Any())
                 {
-                    await ExcelRaporuOlustur(takvim); // Excel'i oluştur
-                    _sonOlusturulanTakvim = takvim; // Takvimi sakla
-                    IsTakvimOlusturuldu = true; // SADECE BAŞARILI OLUNCA true yap (Buton aktif olur)
-                    MessageBox.Show($"Sınav programı başarıyla oluşturuldu ve Excel'e kaydedildi! Şimdi 'Oturma Planlaması' butonunu kullanabilirsiniz.", "Başarılı");
+                    await ExcelRaporuOlustur(takvim);
+                    _sonOlusturulanTakvim = takvim;
+                    IsTakvimOlusturuldu = true;
+                    MessageBox.Show($"Sınav programı başarıyla oluşturuldu ve Excel'e kaydedildi!", "Başarılı");
                 }
                 else
                 {
@@ -190,71 +170,18 @@ namespace Yazlab1.ViewModel
             }
         }
 
-        /// <summary>
-        /// Oturma Planı penceresini açan komut.
-        /// </summary>
         [RelayCommand(CanExecute = nameof(CanOturmaPlanlamasinaGit))]
         private void OturmaPlanlamasinaGit()
         {
             string sinavAdiBasligi = $"{_aktifKullaniciBolumAdi.ToUpper()} BÖLÜMÜ {_sinavTuru.ToUpper()} SINAV PROGRAMI";
-            // SinavOturmaPlaniWindow'u aç (sınav listesi ekranı)
             SinavOturmaPlaniWindow oturmaPlaniListesiWindow = new SinavOturmaPlaniWindow(_sonOlusturulanTakvim, sinavAdiBasligi);
             oturmaPlaniListesiWindow.Show();
         }
 
-        /// <summary>
-        /// OturmaPlanlamasinaGit komutunun çalışıp çalışamayacağını belirler.
-        /// </summary>
         private bool CanOturmaPlanlamasinaGit()
         {
-            // IsTakvimOlusturuldu true ise buton aktif olur
             return IsTakvimOlusturuldu;
         }
-
-        #region Excel Raporu Oluşturma
-        private async Task ExcelRaporuOlustur(List<AtanmisSinav> takvim)
-        {
-            try
-            {
-                var raporVerisi = new List<ExcelRaporSatiri>();
-                var ogretimElemanlari = await OgretimElemanlariniGetir();
-                foreach (var sinav in takvim.OrderBy(s => s.Tarih).ThenBy(s => s.BaslangicSaati))
-                {
-                    raporVerisi.Add(new ExcelRaporSatiri
-                    {
-                        Tarih = sinav.Tarih.ToString("dd.MM.yyyy"),
-                        SinavSaati = sinav.BaslangicSaati.ToString(@"hh\:mm"),
-                        DersAdi = sinav.SinavDetay?.Ders?.DersAdi ?? "Bilinmiyor",
-                        OgretimElemani = ogretimElemanlari.ContainsKey(sinav.SinavDetay?.Ders?.DersID ?? -1) ? ogretimElemanlari[sinav.SinavDetay.Ders.DersID] : "N/A",
-                        Derslik = sinav.DerslikKodlariString
-                    });
-                }
-                using (var workbook = new XLWorkbook())
-                {
-                    var worksheet = workbook.Worksheets.Add("Sınav Programı");
-                    worksheet.Cell("A1").Value = $"{_aktifKullaniciBolumAdi.ToUpper()} BÖLÜMÜ {_sinavTuru.ToUpper()} SINAV PROGRAMI";
-                    worksheet.Range("A1:E1").Merge().Style.Font.SetBold().Font.SetFontSize(16).Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
-                    var basliklar = new List<string> { "Tarih", "Sınav Saati", "Ders Adı", "Öğretim Elemanı", "Derslik" };
-                    worksheet.Cell("A3").InsertData(new[] { basliklar });
-                    worksheet.Range("A3:E3").Style.Font.SetBold().Fill.SetBackgroundColor(XLColor.LightGray);
-                    if (raporVerisi.Any()) worksheet.Cell("A4").InsertTable(raporVerisi, false);
-                    worksheet.Columns().AdjustToContents();
-                    SaveFileDialog saveFileDialog = new SaveFileDialog
-                    {
-                        Filter = "Excel Workbook|*.xlsx",
-                        Title = "Sınav Programını Kaydet",
-                        FileName = $"Sinav_Programi_{_aktifKullaniciBolumAdi}_{_sinavTuru}_{DateTime.Now:yyyyMMdd}.xlsx"
-                    };
-                    bool? result = Application.Current.Dispatcher.Invoke(() => saveFileDialog.ShowDialog());
-                    if (result == true)
-                    {
-                        workbook.SaveAs(saveFileDialog.FileName);
-                    }
-                }
-            }
-            catch (Exception ex) { Application.Current.Dispatcher.Invoke(() => MessageBox.Show($"Excel raporu oluşturulurken hata: {ex.Message}", "Hata")); }
-        }
-        #endregion
 
         #region Algoritma Mantığı
         private List<AtanmisSinav> AlgoritmayiCalistir(List<SinavDetay> sinavlar, List<Derslik> derslikler, StringBuilder log)
@@ -262,96 +189,154 @@ namespace Yazlab1.ViewModel
             var takvim = new List<AtanmisSinav>();
             var ogrenciProgrami = new Dictionary<int, List<AtanmisSinav>>();
             var derslikProgrami = new Dictionary<DateTime, Dictionary<TimeSpan, HashSet<int>>>();
-            var siraliSinavlar = sinavlar.OrderByDescending(s => s.OgrenciSayisi).ToList();
+            var derslikKullanımSayisi = new Dictionary<int, int>();
 
-            if (siraliSinavlar.Any())
+            foreach (var derslik in derslikler)
             {
-                int enKalabalikSinav = siraliSinavlar.First().OgrenciSayisi;
-                int toplamKapasite = derslikler.Sum(d => d.Kapasite);
-                if (enKalabalikSinav > toplamKapasite)
-                {
-                    log.AppendLine("Algoritma Başarısız!");
-                    log.AppendLine($"En kalabalık sınav ({siraliSinavlar.First().Ders?.DersKodu ?? "N/A"}) {enKalabalikSinav} kişidir.");
-                    log.AppendLine($"Ancak tüm dersliklerin toplam kapasitesi sadece {toplamKapasite}.");
-                    log.AppendLine("Lütfen derslik ekleyin veya kapasiteleri artırın.");
-                    return null;
-                }
+                derslikKullanımSayisi[derslik.DerslikID] = 0;
             }
+
+            var siraliSinavlar = sinavlar.OrderByDescending(s => s.OgrenciSayisi).ToList();
 
             foreach (var sinav in siraliSinavlar)
             {
                 bool yerlestirildi = false;
+
                 for (var gun = _sinavBaslangicTarihi.Date; gun <= _sinavBitisTarihi.Date; gun = gun.AddDays(1))
                 {
                     int dayIndex = (int)gun.DayOfWeek == 0 ? 6 : (int)gun.DayOfWeek - 1;
                     if (!Gunler[dayIndex]) continue;
 
-                    int slotSuresi = _varsayilanSinavSuresi + _varsayilanBeklemeSuresi;
-
-                    for (var saat = new TimeSpan(SinavBaslangicSaati, 0, 0); saat < new TimeSpan(SinavBitisSaati, 0, 0); saat = saat.Add(TimeSpan.FromMinutes(slotSuresi)))
+                   
+                    for (var saat = new TimeSpan(SinavBaslangicSaati, 0, 0);
+                         saat <= new TimeSpan(SinavBitisSaati - 1, 30, 0);
+                         saat = saat.Add(TimeSpan.FromMinutes(30)))
                     {
+                       
+                        TimeSpan bitisSaati = saat.Add(TimeSpan.FromMinutes(sinav.SinavSuresi));
+                        if (bitisSaati > new TimeSpan(SinavBitisSaati, 0, 0))
+                            continue;
+
+                        
                         bool ogrenciCakismasiVar = sinav.Ogrenciler.Any(ogrenci =>
                             ogrenciProgrami.TryGetValue(ogrenci.OgrenciID, out var ogrencininSinavlari) &&
-                            ogrencininSinavlari.Any(s => s.Tarih.Date == gun.Date && s.BaslangicSaati == saat));
+                            ogrencininSinavlari.Any(s => s.Tarih.Date == gun.Date &&
+                                                       ((saat >= s.BaslangicSaati && saat < s.BitisSaati) ||
+                                                        (bitisSaati > s.BaslangicSaati && bitisSaati <= s.BitisSaati) ||
+                                                        (saat <= s.BaslangicSaati && bitisSaati >= s.BitisSaati))));
                         if (ogrenciCakismasiVar) continue;
 
-                        var doluDerslikIdleri = derslikProgrami.ContainsKey(gun) && derslikProgrami[gun].ContainsKey(saat)
-                                               ? derslikProgrami[gun][saat]
-                                               : new HashSet<int>();
-                        var bosDerslikler = derslikler.Where(d => !doluDerslikIdleri.Contains(d.DerslikID))
-                                                      .OrderByDescending(d => d.Kapasite) // Büyükten küçüğe
-                                                      .ToList();
-
-                        var uygunDerslikler = new List<Derslik>();
-                        var kalanOgrenci = sinav.OgrenciSayisi;
-                        foreach (var derslik in bosDerslikler)
+                       
+                        bool beklemeSuresiUygun = true;
+                        foreach (var ogrenci in sinav.Ogrenciler)
                         {
-                            if (kalanOgrenci > 0)
+                            if (ogrenciProgrami.TryGetValue(ogrenci.OgrenciID, out var ogrencininSinavlari))
                             {
-                                uygunDerslikler.Add(derslik);
-                                kalanOgrenci -= derslik.Kapasite;
+                                foreach (var oncekiSinav in ogrencininSinavlari)
+                                {
+                                    if (oncekiSinav.Tarih.Date == gun.Date)
+                                    {
+                                        TimeSpan fark = saat - oncekiSinav.BitisSaati;
+                                        if (fark.TotalMinutes < _varsayilanBeklemeSuresi && fark.TotalMinutes > 0)
+                                        {
+                                            beklemeSuresiUygun = false;
+                                            break;
+                                        }
+                                    }
+                                }
                             }
-                            else break;
+                            if (!beklemeSuresiUygun) break;
                         }
+                        if (!beklemeSuresiUygun) continue;
 
-                        if (kalanOgrenci <= 0 && uygunDerslikler.Any())
+                        // Derslik uygunluğu kontrolü
+                        var uygunDerslikler = UygunDerslikleriBul(derslikler, derslikProgrami, gun, saat, bitisSaati, derslikKullanımSayisi, sinav.OgrenciSayisi);
+
+                        if (uygunDerslikler.Any())
                         {
-                            TimeSpan bitisSaati = saat.Add(TimeSpan.FromMinutes(sinav.SinavSuresi));
-                            TimeSpan sonrakiSlotBaslangici = saat.Add(TimeSpan.FromMinutes(slotSuresi));
-                            if (bitisSaati > sonrakiSlotBaslangici)
+                            var atama = new AtanmisSinav
                             {
-                                // Sınav bu slota sığmıyor
-                                continue;
-                            }
-
-                            var atama = new AtanmisSinav { SinavDetay = sinav, Tarih = gun, BaslangicSaati = saat, BitisSaati = bitisSaati, AtananDerslikler = uygunDerslikler };
+                                SinavDetay = sinav,
+                                Tarih = gun,
+                                BaslangicSaati = saat,
+                                BitisSaati = bitisSaati,
+                                AtananDerslikler = uygunDerslikler
+                            };
                             takvim.Add(atama);
+
                             foreach (var ogrenci in sinav.Ogrenciler)
                             {
-                                if (!ogrenciProgrami.ContainsKey(ogrenci.OgrenciID)) ogrenciProgrami[ogrenci.OgrenciID] = new List<AtanmisSinav>();
+                                if (!ogrenciProgrami.ContainsKey(ogrenci.OgrenciID))
+                                    ogrenciProgrami[ogrenci.OgrenciID] = new List<AtanmisSinav>();
                                 ogrenciProgrami[ogrenci.OgrenciID].Add(atama);
                             }
-                            if (!derslikProgrami.ContainsKey(gun)) derslikProgrami[gun] = new Dictionary<TimeSpan, HashSet<int>>();
-                            if (!derslikProgrami[gun].ContainsKey(saat)) derslikProgrami[gun][saat] = new HashSet<int>();
-                            foreach (var d in uygunDerslikler) derslikProgrami[gun][saat].Add(d.DerslikID);
+
+                            for (var derslikSaat = saat; derslikSaat < bitisSaati; derslikSaat = derslikSaat.Add(TimeSpan.FromMinutes(30)))
+                            {
+                                if (!derslikProgrami.ContainsKey(gun))
+                                    derslikProgrami[gun] = new Dictionary<TimeSpan, HashSet<int>>();
+                                if (!derslikProgrami[gun].ContainsKey(derslikSaat))
+                                    derslikProgrami[gun][derslikSaat] = new HashSet<int>();
+
+                                foreach (var d in uygunDerslikler)
+                                {
+                                    derslikProgrami[gun][derslikSaat].Add(d.DerslikID);
+                                    derslikKullanımSayisi[d.DerslikID]++;
+                                }
+                            }
+
                             yerlestirildi = true;
                             break;
                         }
                     }
                     if (yerlestirildi) break;
                 }
+
                 if (!yerlestirildi)
                 {
                     log.AppendLine($"'({sinav.Ders?.DersKodu ?? "N/A"}) {sinav.Ders?.DersAdi ?? "Bilinmeyen"}' dersinin sınavı yerleştirilemedi!");
-                    log.AppendLine($"Gereken Kapasite: {sinav.OgrenciSayisi}");
-                    log.AppendLine("\nOlası Nedenler:");
-                    log.AppendLine("- Tarih aralığı, seçili gün/saat sayısı veya derslik kapasitesi yetersiz.");
-                    log.AppendLine("- Öğrenci çakışmaları nedeniyle uygun zaman dilimi bulunamadı.");
                     return null;
                 }
             }
-            if (!takvim.Any()) log.AppendLine("Hiçbir sınav yerleştirilemedi. Lütfen kısıtlarınızı kontrol edin.");
             return takvim;
+        }
+
+        private List<Derslik> UygunDerslikleriBul(List<Derslik> derslikler,
+                                                 Dictionary<DateTime, Dictionary<TimeSpan, HashSet<int>>> derslikProgrami,
+                                                 DateTime gun, TimeSpan baslangic, TimeSpan bitis,
+                                                 Dictionary<int, int> derslikKullanımSayisi, int gerekenOgrenciSayisi)
+        {
+            var uygunDerslikler = new List<Derslik>();
+            var kalanOgrenci = gerekenOgrenciSayisi;
+
+            var siraliDerslikler = derslikler.OrderBy(d => derslikKullanımSayisi[d.DerslikID])
+                                            .ThenByDescending(d => d.Kapasite)
+                                            .ToList();
+
+            foreach (var derslik in siraliDerslikler)
+            {
+                bool derslikUygun = true;
+                for (var kontrolSaati = baslangic; kontrolSaati < bitis; kontrolSaati = kontrolSaati.Add(TimeSpan.FromMinutes(30)))
+                {
+                    if (derslikProgrami.ContainsKey(gun) &&
+                        derslikProgrami[gun].ContainsKey(kontrolSaati) &&
+                        derslikProgrami[gun][kontrolSaati].Contains(derslik.DerslikID))
+                    {
+                        derslikUygun = false;
+                        break;
+                    }
+                }
+
+                if (derslikUygun && kalanOgrenci > 0)
+                {
+                    uygunDerslikler.Add(derslik);
+                    kalanOgrenci -= derslik.Kapasite;
+                }
+
+                if (kalanOgrenci <= 0) break;
+            }
+
+            return kalanOgrenci <= 0 ? uygunDerslikler : new List<Derslik>();
         }
         #endregion
 
@@ -436,6 +421,49 @@ namespace Yazlab1.ViewModel
                 Application.Current.Dispatcher.Invoke(() => MessageBox.Show($"Derslikler getirilirken bir hata oluştu: {ex.Message}", "Veritabanı Hatası"));
                 return null;
             }
+        }
+
+        private async Task ExcelRaporuOlustur(List<AtanmisSinav> takvim)
+        {
+            try
+            {
+                var raporVerisi = new List<ExcelRaporSatiri>();
+                var ogretimElemanlari = await OgretimElemanlariniGetir();
+                foreach (var sinav in takvim.OrderBy(s => s.Tarih).ThenBy(s => s.BaslangicSaati))
+                {
+                    raporVerisi.Add(new ExcelRaporSatiri
+                    {
+                        Tarih = sinav.Tarih.ToString("dd.MM.yyyy"),
+                        SinavSaati = sinav.BaslangicSaati.ToString(@"hh\:mm"),
+                        DersAdi = sinav.SinavDetay?.Ders?.DersAdi ?? "Bilinmiyor",
+                        OgretimElemani = ogretimElemanlari.ContainsKey(sinav.SinavDetay?.Ders?.DersID ?? -1) ? ogretimElemanlari[sinav.SinavDetay.Ders.DersID] : "N/A",
+                        Derslik = sinav.DerslikKodlariString
+                    });
+                }
+                using (var workbook = new XLWorkbook())
+                {
+                    var worksheet = workbook.Worksheets.Add("Sınav Programı");
+                    worksheet.Cell("A1").Value = $"{_aktifKullaniciBolumAdi.ToUpper()} BÖLÜMÜ {_sinavTuru.ToUpper()} SINAV PROGRAMI";
+                    worksheet.Range("A1:E1").Merge().Style.Font.SetBold().Font.SetFontSize(16).Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+                    var basliklar = new List<string> { "Tarih", "Sınav Saati", "Ders Adı", "Öğretim Elemanı", "Derslik" };
+                    worksheet.Cell("A3").InsertData(new[] { basliklar });
+                    worksheet.Range("A3:E3").Style.Font.SetBold().Fill.SetBackgroundColor(XLColor.LightGray);
+                    if (raporVerisi.Any()) worksheet.Cell("A4").InsertTable(raporVerisi, false);
+                    worksheet.Columns().AdjustToContents();
+                    SaveFileDialog saveFileDialog = new SaveFileDialog
+                    {
+                        Filter = "Excel Workbook|*.xlsx",
+                        Title = "Sınav Programını Kaydet",
+                        FileName = $"Sinav_Programi_{_aktifKullaniciBolumAdi}_{_sinavTuru}_{DateTime.Now:yyyyMMdd}.xlsx"
+                    };
+                    bool? result = Application.Current.Dispatcher.Invoke(() => saveFileDialog.ShowDialog());
+                    if (result == true)
+                    {
+                        workbook.SaveAs(saveFileDialog.FileName);
+                    }
+                }
+            }
+            catch (Exception ex) { Application.Current.Dispatcher.Invoke(() => MessageBox.Show($"Excel raporu oluşturulurken hata: {ex.Message}", "Hata")); }
         }
 
         private async Task<Dictionary<int, string>> OgretimElemanlariniGetir()

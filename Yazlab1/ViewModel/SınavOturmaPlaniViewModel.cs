@@ -1,27 +1,27 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel; // Hata vermiyorsa kalabilir
-using CommunityToolkit.Mvvm.Input; // Hata vermiyorsa kalabilir
+﻿using CommunityToolkit.Mvvm.ComponentModel; 
+using CommunityToolkit.Mvvm.Input; 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel; // Manuel INotifyPropertyChanged için
+using System.ComponentModel; 
 using System.Linq;
-using System.Runtime.CompilerServices; // Manuel INotifyPropertyChanged için
+using System.Runtime.CompilerServices; 
 using System.Windows;
-using System.Windows.Input; // Manuel ICommand için
+using System.Windows.Input; 
 using Yazlab1.Model;
 
-using Yazlab1.Views; // Yeni pencereyi açmak için
+using Yazlab1.Views; 
 
 namespace Yazlab1.ViewModel
 {
    
     public class SinavOturmaPlaniViewModel : INotifyPropertyChanged
     {
-        // === Alanlar ===
+        
         private AtanmisSinav _secilenSinav;
-        private readonly string _sinavAdiBasligi; // Pencere başlığı için hala gerekli
+        private readonly string _sinavAdiBasligi; 
 
-        // === Özellikler ===
+      
         public ObservableCollection<AtanmisSinav> SinavListesi { get; set; }
 
         public AtanmisSinav SecilenSinav
@@ -33,17 +33,15 @@ namespace Yazlab1.ViewModel
                 {
                     _secilenSinav = value;
                     OnPropertyChanged();
-                    // Seçim değiştiğinde artık bir şey yapmaya gerek yok,
-                    // sadece butonun aktifliğini kontrol edeceğiz.
+                  
                     ((RelayCommand)OturmaPlaninaGecCommand).NotifyCanExecuteChanged();
                 }
             }
         }
 
-        // === Komutlar ===
         public ICommand OturmaPlaninaGecCommand { get; }
 
-        // === Constructor ===
+       
         public SinavOturmaPlaniViewModel(List<AtanmisSinav> tumSinavlar, string sinavAdiBasligi)
         {
             _sinavAdiBasligi = sinavAdiBasligi;
@@ -56,34 +54,30 @@ namespace Yazlab1.ViewModel
             OturmaPlaninaGecCommand = new RelayCommand(OturmaPlaninaGec, CanOturmaPlaninaGec);
         }
 
-        // === Metotlar ===
+      
 
-        // Yeni pencereyi açan metot
+       
         private void OturmaPlaninaGec()
         {
-            // CanExecute zaten kontrol ettiği için burada tekrar null kontrolüne gerek yok.
+            
             OturmaPlaniGosterWindow gosterWindow = new OturmaPlaniGosterWindow(SecilenSinav, _sinavAdiBasligi);
             gosterWindow.Show();
         }
 
-        // Butonun aktif olup olmayacağını belirleyen metot
+       
         private bool CanOturmaPlaninaGec()
         {
-            return SecilenSinav != null; // Sadece bir sınav seçiliyse aktif olsun
+            return SecilenSinav != null;
         }
 
-        // PDF ile ilgili tüm metotlar kaldırıldı.
-        // Oturma planı oluşturma mantığı da kaldırıldı (yeni ViewModel'de olacak).
-
-        // === INotifyPropertyChanged Implementasyonu ===
+        
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        // === Basit RelayCommand Implementasyonu ===
-        // Bu sınıfın burada veya ayrı bir dosyada olması gerekir.
+        
         public class RelayCommand : ICommand
         {
             private readonly Action _execute;

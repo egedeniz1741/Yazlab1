@@ -11,7 +11,7 @@ namespace Yazlab1
 {
     public partial class MainWindow : Window
     {
-        private readonly MainWindowViewModel _viewModel; // ViewModel'i saklamak için
+        private readonly MainWindowViewModel _viewModel; 
 
         public MainWindow(Kullanici aktifKullanici)
         {
@@ -25,13 +25,13 @@ namespace Yazlab1
         /// </summary>
         private void BtnKullaniciEkle_Click(object sender, RoutedEventArgs e)
         {
-            // Değerleri XAML'den al (PasswordBox için bu zorunlu)
+      
             string email = txtEmail.Text;
             string password = txtPassword.Password;
             string adSoyad = txtAdSoyad.Text;
             Bolum selectedBolum = cmbBolum.SelectedItem as Bolum;
 
-            // Mantığı işletmesi için ViewModel'e gönder
+            
             _viewModel.AddNewCoordinator(email, password, adSoyad, selectedBolum);
 
             // Başarılı eklemeden sonra PasswordBox'ı temizle

@@ -9,9 +9,9 @@ namespace Yazlab1.Views
         public OturmaPlaniGosterWindow(AtanmisSinav secilenSinav, string sinavAdiBasligi)
         {
             InitializeComponent();
-            // Yeni ViewModel'i oluşturup DataContext'e atıyoruz
+           
             this.DataContext = new OturmaPlaniGosterViewModel(secilenSinav, sinavAdiBasligi);
-            // Pencere başlığını ViewModel'den alıyoruz (opsiyonel, constructor'da da set edilebilir)
+            
             this.SetBinding(Window.TitleProperty, "PencereBasligi");
         }
     }
