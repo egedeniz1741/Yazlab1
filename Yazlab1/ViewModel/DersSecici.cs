@@ -1,25 +1,23 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Yazlab1.Model;
+
 
 namespace Yazlab1.ViewModel
 {
     public partial class DersSecici : ObservableObject
     {
         public Ders Ders { get; }
+        [ObservableProperty] public bool _isSelected = true;
+
 
         [ObservableProperty]
-        public bool _isSelected; 
+        public int _sinavSuresi;
 
-        public DersSecici(Ders ders)
+
+        public DersSecici(Ders ders, int varsayilanSure)
         {
-            Ders = ders;
-            _isSelected = true;
+            Ders = ders ?? throw new ArgumentNullException(nameof(ders));
+            _sinavSuresi = varsayilanSure;
         }
-
     }
 }
