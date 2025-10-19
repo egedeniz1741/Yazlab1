@@ -15,6 +15,10 @@ namespace Yazlab1.Views // Namespace'inizin bu olduğundan emin olun
             InitializeComponent();
             // Gelen parametreleri kullanarak doğru ViewModel'i oluşturup DataContext'e atıyoruz
             this.DataContext = new SinavOturmaPlaniViewModel(tumSinavlar, sinavAdiBasligi);
+            // Pencere başlığını da ViewModel'den almasını sağlayabiliriz (opsiyonel)
+            // this.SetBinding(Window.TitleProperty, "PencereBasligi"); // Eğer ViewModel'de PencereBasligi property'si varsa
+            // Veya direkt burada ayarlayabiliriz:
+            this.Title = "Sınav Oturma Planları - " + sinavAdiBasligi;
         }
     }
 }

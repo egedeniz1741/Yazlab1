@@ -5,15 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Yazlab1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid Margin="20">
+        Title="Admin Paneli" Height="600" Width="900" WindowStartupLocation="CenterScreen">
+
+    <Grid Margin="20" Background="#F4F7FC">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="20"/>
             <ColumnDefinition Width="280"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Sol Taraf - Yeni Kullanıcı Ekle -->
         <Border Grid.Column="0" Background="White" CornerRadius="10" Padding="25"
                 BorderBrush="#E0E0E0" BorderThickness="1">
             <Border.Effect>
@@ -22,14 +22,14 @@
 
             <StackPanel>
                 <TextBlock Text="Yeni Kullanıcı Ekle" 
-                          FontSize="24" FontWeight="Bold" 
-                          Foreground="#2C3E50" Margin="0,0,0,30"/>
+                           FontSize="24" FontWeight="Bold" 
+                           Foreground="#2C3E50" Margin="0,0,0,30"/>
 
-                <!-- E-posta -->
                 <TextBlock Text="E-posta" FontSize="14" Foreground="#555" Margin="0,0,0,5"/>
                 <TextBox x:Name="txtEmail" Height="40" FontSize="14" 
-                        Padding="10,0" Margin="0,0,0,20"
-                        BorderBrush="#BDBDBD" BorderThickness="1">
+                         Padding="10,0" Margin="0,0,0,20"
+                         BorderBrush="#BDBDBD" BorderThickness="1"
+                         Text="{Binding NewUserEmail, UpdateSourceTrigger=PropertyChanged}">
                     <TextBox.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="5"/>
@@ -37,11 +37,10 @@
                     </TextBox.Resources>
                 </TextBox>
 
-                <!-- Şifre -->
                 <TextBlock Text="Şifre" FontSize="14" Foreground="#555" Margin="0,0,0,5"/>
                 <PasswordBox x:Name="txtPassword" Height="40" FontSize="14" 
-                            Padding="10,0" Margin="0,0,0,20"
-                            BorderBrush="#BDBDBD" BorderThickness="1">
+                             Padding="10,0" Margin="0,0,0,20"
+                             BorderBrush="#BDBDBD" BorderThickness="1">
                     <PasswordBox.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="5"/>
@@ -49,11 +48,11 @@
                     </PasswordBox.Resources>
                 </PasswordBox>
 
-                <!-- Ad Soyad -->
                 <TextBlock Text="Ad Soyad" FontSize="14" Foreground="#555" Margin="0,0,0,5"/>
                 <TextBox x:Name="txtAdSoyad" Height="40" FontSize="14" 
-                        Padding="10,0" Margin="0,0,0,20"
-                        BorderBrush="#BDBDBD" BorderThickness="1">
+                         Padding="10,0" Margin="0,0,0,20"
+                         BorderBrush="#BDBDBD" BorderThickness="1"
+                         Text="{Binding NewUserAdSoyad, UpdateSourceTrigger=PropertyChanged}">
                     <TextBox.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="5"/>
@@ -61,22 +60,17 @@
                     </TextBox.Resources>
                 </TextBox>
 
-                <!-- Bölüm -->
                 <TextBlock Text="Bölüm" FontSize="14" Foreground="#555" Margin="0,0,0,5"/>
                 <ComboBox x:Name="cmbBolum" Height="40" FontSize="14" 
-                         Padding="10,0" Margin="0,0,0,30"
-                         BorderBrush="#BDBDBD" BorderThickness="1">
-                    <ComboBoxItem Content="Bilgisayar Mühendisliği"/>
-                    <ComboBoxItem Content="Elektrik Mühendisliği"/>
-                    <ComboBoxItem Content="Yazılım Mühendisliği"/>
-                    <ComboBoxItem Content="Elektrik Elektronik Mühendisliği"/>
-                    <ComboBoxItem Content="İnşaat Mühendisliği"/>
-                </ComboBox>
-
-                <!-- Kaydet Butonu -->
-                <Button Content="Kullanıcı Ekle" Height="45" FontSize="16" 
-                       FontWeight="Bold" Background="#3498DB" Foreground="White"
-                       BorderThickness="0" Cursor="Hand">
+                          Padding="10,0" Margin="0,0,0,30"
+                          BorderBrush="#BDBDBD" BorderThickness="1"
+                          ItemsSource="{Binding BolumlerListesi}"
+                          SelectedItem="{Binding SelectedBolum}"
+                          DisplayMemberPath="BolumAdi"/>
+                <Button x:Name="btnKullaniciEkle" Content="Kullanıcı Ekle" Height="45" FontSize="16" 
+                        FontWeight="Bold" Background="#3498DB" Foreground="White"
+                        BorderThickness="0" Cursor="Hand"
+                        Click="BtnKullaniciEkle_Click">
                     <Button.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="5"/>
@@ -86,7 +80,6 @@
             </StackPanel>
         </Border>
 
-        <!-- Sağ Taraf - Bölüm Butonları -->
         <Border Grid.Column="2" Background="White" CornerRadius="10" Padding="20"
                 BorderBrush="#E0E0E0" BorderThickness="1">
             <Border.Effect>
@@ -94,17 +87,15 @@
             </Border.Effect>
 
             <StackPanel>
-                <TextBlock Text="Bölümler" 
-                          FontSize="20" FontWeight="Bold" 
-                          Foreground="#2C3E50" Margin="0,0,0,25"
-                          HorizontalAlignment="Center"/>
+                <TextBlock Text="Bölümler" FontSize="20" FontWeight="Bold" 
+                           Foreground="#2C3E50" Margin="0,0,0,25"
+                           HorizontalAlignment="Center"/>
 
-                <!-- Bilgisayar Mühendisliği -->
                 <Button x:Name="btnBilgisayar" Content="💻 Bilgisayar Mühendisliği" 
-                       Height="70" FontSize="14" FontWeight="SemiBold"
-                       Background="#E74C3C" Foreground="White"
-                       BorderThickness="0" Margin="0,0,0,15" Cursor="Hand"
-                       Command="{Binding BilgisayarEkraninaGitCommand}">
+                        Height="70" FontSize="14" FontWeight="SemiBold"
+                        Background="#E74C3C" Foreground="White"
+                        BorderThickness="0" Margin="0,0,0,15" Cursor="Hand"
+                        Tag="Bilgisayar Mühendisliği" Click="BtnBolumeGit_Click">
                     <Button.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="8"/>
@@ -112,13 +103,11 @@
                     </Button.Resources>
                 </Button>
 
-                <!-- Elektrik Mühendisliği -->
                 <Button x:Name="btnElektrik" Content="⚡ Elektrik Mühendisliği" 
-                       Height="70" FontSize="14" FontWeight="SemiBold"
-                       Background="#F39C12" Foreground="White"
-                       BorderThickness="0" Margin="0,0,0,15" Cursor="Hand"
-                       Command="{Binding DigerBolumlerCommand}"
-                       CommandParameter="Elektrik Mühendisliği">
+                        Height="70" FontSize="14" FontWeight="SemiBold"
+                        Background="#F39C12" Foreground="White"
+                        BorderThickness="0" Margin="0,0,0,15" Cursor="Hand"
+                        Tag="Elektrik Mühendisliği" Click="BtnBolumeGit_Click">
                     <Button.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="8"/>
@@ -126,13 +115,11 @@
                     </Button.Resources>
                 </Button>
 
-                <!-- Yazılım Mühendisliği -->
                 <Button x:Name="btnYazilim" Content="📱 Yazılım Mühendisliği" 
-                       Height="70" FontSize="14" FontWeight="SemiBold"
-                       Background="#3498DB" Foreground="White"
-                       BorderThickness="0" Margin="0,0,0,15" Cursor="Hand"
-                       Command="{Binding DigerBolumlerCommand}"
-                       CommandParameter="Yazılım Mühendisliği">
+                        Height="70" FontSize="14" FontWeight="SemiBold"
+                        Background="#3498DB" Foreground="White"
+                        BorderThickness="0" Margin="0,0,0,15" Cursor="Hand"
+                        Tag="Yazılım Mühendisliği" Click="BtnBolumeGit_Click">
                     <Button.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="8"/>
@@ -140,13 +127,11 @@
                     </Button.Resources>
                 </Button>
 
-                <!-- Elektrik Elektronik Mühendisliği -->
                 <Button x:Name="btnElektrikElektronik" Content="🔌 Elektrik Elektronik Müh." 
-                       Height="70" FontSize="14" FontWeight="SemiBold"
-                       Background="#9B59B6" Foreground="White"
-                       BorderThickness="0" Margin="0,0,0,15" Cursor="Hand"
-                       Command="{Binding DigerBolumlerCommand}"
-                       CommandParameter="Elektrik Elektronik Mühendisliği">
+                        Height="70" FontSize="14" FontWeight="SemiBold"
+                        Background="#9B59B6" Foreground="White"
+                        BorderThickness="0" Margin="0,0,0,15" Cursor="Hand"
+                        Tag="Elektronik Mühendisliği" Click="BtnBolumeGit_Click">
                     <Button.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="8"/>
@@ -154,13 +139,11 @@
                     </Button.Resources>
                 </Button>
 
-                <!-- İnşaat Mühendisliği -->
                 <Button x:Name="btnInsaat" Content="🏗️ İnşaat Mühendisliği" 
-                       Height="70" FontSize="14" FontWeight="SemiBold"
-                       Background="#16A085" Foreground="White"
-                       BorderThickness="0" Cursor="Hand"
-                       Command="{Binding DigerBolumlerCommand}"
-                       CommandParameter="İnşaat Mühendisliği">
+                        Height="70" FontSize="14" FontWeight="SemiBold"
+                        Background="#16A085" Foreground="White"
+                        BorderThickness="0" Cursor="Hand"
+                        Tag="İnşaat Mühendisliği" Click="BtnBolumeGit_Click">
                     <Button.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="8"/>

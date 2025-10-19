@@ -1,132 +1,98 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using Microsoft.Win32;
-using MigraDoc.DocumentObjectModel;
-using MigraDoc.DocumentObjectModel.Tables;
-using MigraDoc.Rendering;
-using PdfSharp.Drawing;
-using PdfSharp.Pdf;
+﻿using CommunityToolkit.Mvvm.ComponentModel; // Hata vermiyorsa kalabilir
+using CommunityToolkit.Mvvm.Input; // Hata vermiyorsa kalabilir
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
+using System.ComponentModel; // Manuel INotifyPropertyChanged için
 using System.Linq;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices; // Manuel INotifyPropertyChanged için
 using System.Windows;
+using System.Windows.Input; // Manuel ICommand için
 using Yazlab1.Model;
 
+using Yazlab1.Views; // Yeni pencereyi açmak için
 
 namespace Yazlab1.ViewModel
 {
    
-
-    
-
-   
-
-    public partial class SinavOturmaPlaniViewModel : ObservableObject
+    public class SinavOturmaPlaniViewModel : INotifyPropertyChanged
     {
+        // === Alanlar ===
+        private AtanmisSinav _secilenSinav;
+        private readonly string _sinavAdiBasligi; // Pencere başlığı için hala gerekli
+
+        // === Özellikler ===
         public ObservableCollection<AtanmisSinav> SinavListesi { get; set; }
 
-        [ObservableProperty]
-        private AtanmisSinav _secilenSinav;
+        public AtanmisSinav SecilenSinav
+        {
+            get => _secilenSinav;
+            set
+            {
+                if (_secilenSinav != value)
+                {
+                    _secilenSinav = value;
+                    OnPropertyChanged();
+                    // Seçim değiştiğinde artık bir şey yapmaya gerek yok,
+                    // sadece butonun aktifliğini kontrol edeceğiz.
+                    ((RelayCommand)OturmaPlaninaGecCommand).NotifyCanExecuteChanged();
+                }
+            }
+        }
 
-        // Bu özellik artık Observable değil, çünkü koleksiyonun kendisini değil, içeriğini değiştiriyoruz.
-        public ObservableCollection<DerslikOturmaPlani> GorselOturmaPlaniListesi { get; set; }
+        // === Komutlar ===
+        public ICommand OturmaPlaninaGecCommand { get; }
 
-        [ObservableProperty]
-        private List<OturmaPlaniOgrenciDetay> _ogrenciYerlesimListesiPdf;
-
-        private readonly string _sinavAdiBasligi;
-
+        // === Constructor ===
         public SinavOturmaPlaniViewModel(List<AtanmisSinav> tumSinavlar, string sinavAdiBasligi)
         {
             _sinavAdiBasligi = sinavAdiBasligi;
-            SinavListesi = new ObservableCollection<AtanmisSinav>(tumSinavlar.OrderBy(s => s.Tarih).ThenBy(s => s.BaslangicSaati));
-            GorselOturmaPlaniListesi = new ObservableCollection<DerslikOturmaPlani>();
-            OgrenciYerlesimListesiPdf = new List<OturmaPlaniOgrenciDetay>();
+            var siraliSinavlar = tumSinavlar != null
+         ? tumSinavlar.OrderBy(s => s.Tarih).ThenBy(s => s.BaslangicSaati).ToList()
+         : new List<AtanmisSinav>();
+
+           
+            SinavListesi = new ObservableCollection<AtanmisSinav>(siraliSinavlar);
+            OturmaPlaninaGecCommand = new RelayCommand(OturmaPlaninaGec, CanOturmaPlaninaGec);
         }
 
-        async partial void OnSecilenSinavChanged(AtanmisSinav value)
-        {
-            // Seçim değiştiğinde önceki planı temizle
-            GorselOturmaPlaniListesi.Clear(); // Koleksiyonu yeniden oluşturmak yerine içini temizle
-            OgrenciYerlesimListesiPdf.Clear();
+        // === Metotlar ===
 
-            if (value != null)
-            {
-                // İşlemi arkaplanda yap ama UI güncellemesini Dispatcher ile yapacağımızdan emin ol
-                await Task.Run(() => OturmaPlaniOlustur(value));
-            }
-            // PDF butonu durumunu güncellemek için bildirim gönder
-            PdfAktarCommand.NotifyCanExecuteChanged();
+        // Yeni pencereyi açan metot
+        private void OturmaPlaninaGec()
+        {
+            // CanExecute zaten kontrol ettiği için burada tekrar null kontrolüne gerek yok.
+            OturmaPlaniGosterWindow gosterWindow = new OturmaPlaniGosterWindow(SecilenSinav, _sinavAdiBasligi);
+            gosterWindow.Show();
         }
 
-        private void OturmaPlaniOlustur(AtanmisSinav secilenSinav)
+        // Butonun aktif olup olmayacağını belirleyen metot
+        private bool CanOturmaPlaninaGec()
         {
-            var pdfListesi = new List<OturmaPlaniOgrenciDetay>();
-            var ogrenciler = secilenSinav.SinavDetay.Ogrenciler.OrderBy(o => o.OgrenciNo).ToList();
-            int ogrenciIndex = 0;
-
-            // Geçici bir liste oluşturalım, UI koleksiyonunu doğrudan arkaplanda değiştirmeyelim
-            var geciciGorselPlanlar = new List<DerslikOturmaPlani>();
-
-            foreach (var derslik in secilenSinav.AtananDerslikler.OrderBy(d => d.DerslikKodu))
-            {
-                var derslikPlaniGorsel = new ObservableCollection<OturmaPlaniOgrenciDetay>();
-                int slotSayisi = derslik.BoyunaSiraSayisi * derslik.EnineSiraSayisi;
-
-                for (int slotIndex = 0; slotIndex < slotSayisi; slotIndex++)
-                {
-                    var slotDetayGorsel = new OturmaPlaniOgrenciDetay { Derslik = derslik };
-                    bool slotDolu = false;
-
-                    for (int i = 0; i < derslik.SiraYapisi; i++)
-                    {
-                        if (ogrenciIndex < ogrenciler.Count)
-                        {
-                            var ogrenci = ogrenciler[ogrenciIndex];
-                            int satir = (slotIndex / derslik.EnineSiraSayisi) + 1;
-                            int sutun = (slotIndex % derslik.EnineSiraSayisi) * derslik.SiraYapisi + i + 1;
-
-                            var pdfDetay = new OturmaPlaniOgrenciDetay { Ogrenci = ogrenci, Derslik = derslik, Satir = satir, Sutun = sutun };
-                            pdfListesi.Add(pdfDetay);
-
-                            if (!slotDolu) { slotDetayGorsel.Ogrenci = ogrenci; slotDolu = true; }
-                            ogrenciIndex++;
-                        }
-                    }
-                    derslikPlaniGorsel.Add(slotDetayGorsel);
-                }
-                geciciGorselPlanlar.Add(new DerslikOturmaPlani { Derslik = derslik, Plan = derslikPlaniGorsel });
-            }
-
-            // UI güncellemeleri ana thread'de topluca yapılmalı
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                OgrenciYerlesimListesiPdf = pdfListesi;
-
-                GorselOturmaPlaniListesi.Clear(); // Önce temizle
-                foreach (var plan in geciciGorselPlanlar)
-                {
-                    GorselOturmaPlaniListesi.Add(plan); // Sonra tek tek ekle
-                }
-
-                // GorselOturmaPlaniListesi observable olmadığı için manuel bildirim GEREKMEZ,
-                // çünkü koleksiyonun içeriği değiştiğinde TabControl otomatik güncellenir.
-                // Sadece PDF listesi için bildirim gönderelim (CanExecute için).
-                OnPropertyChanged(nameof(OgrenciYerlesimListesiPdf));
-                PdfAktarCommand.NotifyCanExecuteChanged();
-            });
+            return SecilenSinav != null; // Sadece bir sınav seçiliyse aktif olsun
         }
 
-        // PDF Aktar metodu aynı kalıyor
-        [RelayCommand(CanExecute = nameof(CanPdfAktar))]
-        private void PdfAktar() { /* ...içerik aynı... */ }
+        // PDF ile ilgili tüm metotlar kaldırıldı.
+        // Oturma planı oluşturma mantığı da kaldırıldı (yeni ViewModel'de olacak).
 
-        private bool CanPdfAktar()
+        // === INotifyPropertyChanged Implementasyonu ===
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            return SecilenSinav != null && OgrenciYerlesimListesiPdf != null && OgrenciYerlesimListesiPdf.Any();
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        // === Basit RelayCommand Implementasyonu ===
+        // Bu sınıfın burada veya ayrı bir dosyada olması gerekir.
+        public class RelayCommand : ICommand
+        {
+            private readonly Action _execute;
+            private readonly Func<bool> _canExecute;
+            public event EventHandler CanExecuteChanged;
+            public RelayCommand(Action execute, Func<bool> canExecute = null) { _execute = execute ?? throw new ArgumentNullException(nameof(execute)); _canExecute = canExecute; }
+            public bool CanExecute(object parameter) => _canExecute == null || _canExecute();
+            public void Execute(object parameter) => _execute();
+            public void NotifyCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

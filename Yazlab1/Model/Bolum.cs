@@ -8,8 +8,8 @@ namespace Yazlab1.Model
         [Key]
         public int BolumID { get; set; }
 
-        public required string  BolumAdi { get; set; }
+        public  string  BolumAdi { get; set; }
 
-        public virtual required ICollection<Kullanici> Kullanicilar { get; set; }
+        public virtual  ICollection<Kullanici> Kullanicilar { get; set; }
     }
 }

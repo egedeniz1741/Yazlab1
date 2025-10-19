@@ -1,22 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Yazlab1.Model;
+﻿using Yazlab1.Model;
 
-namespace Yazlab1.ViewModel
+
+namespace Yazlab1.ViewModel // Namespace doğru olmalı
 {
+    /// <summary>
+    /// Görselleştirmede ve hesaplamalarda kullanılacak öğrenci oturma bilgisi.
+    /// </summary>
     public class OturmaPlaniOgrenciDetay
     {
         public Ogrenci Ogrenci { get; set; }
-        public Derslik Derslik { get; set; }
-        public int Satir { get; set; } // Oturduğu sıra (1'den başlar)
-        public int Sutun { get; set; } // Oturduğu sütun (1'den başlar)
+        public Derslik Derslik { get; set; } // Hangi derslikte olduğunu bilmek için
 
-        // Görselleştirme için basit gösterim
-        public string DisplayText => Ogrenci != null ? $"{Ogrenci.OgrenciNo}" : "BOŞ";
-        // PDF için detaylı gösterim
-        public string PdfDisplayText => Ogrenci != null ? $"{Ogrenci.AdSoyad} ({Ogrenci.OgrenciNo})" : "BOŞ";
+        // --- İSİMLER ESKİ HALİNE DÖNDÜ ---
+        public int Satir { get; set; }      // Hesaplanan GERÇEK Satır (1'den başlar)
+        public int Sutun { get; set; }      // Hesaplanan GERÇEK Sütun (1'den başlar)
+
+        // DisplayText artık AdSoyad, No ve GERÇEK Satır/Sütun içeriyor
+        public string DisplayText => Ogrenci != null
+            ? $"{Ogrenci.AdSoyad}\n({Ogrenci.OgrenciNo})\nSatır: {Satir} / Sütun: {Sutun}"
+            : $"BOŞ";
     }
 }

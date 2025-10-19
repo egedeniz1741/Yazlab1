@@ -4,9 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Yazlab1.Views"
+        xmlns:vm="clr-namespace:Yazlab1.ViewModel"
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="Sınav Programı Oluşturma" Height="650" Width="950" WindowStartupLocation="CenterScreen">
+        Title="Sınav Programı Oluşturma" Height="863" Width="1134" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <Style x:Key="BusyAwareButtonStyle" TargetType="Button">
@@ -54,16 +55,12 @@
                         <System:String>Final</System:String>
                         <System:String>Bütünleme</System:String>
                     </ComboBox>
-
                     <TextBlock Text="Sınav Başlangıç Saati (Örn: 9):"/>
                     <TextBox Text="{Binding SinavBaslangicSaati}" Margin="0,5,0,10"/>
-
                     <TextBlock Text="Sınav Bitiş Saati (Örn: 17):"/>
                     <TextBox Text="{Binding SinavBitisSaati}" Margin="0,5,0,10"/>
-
                     <TextBlock Text="Varsayılan Sınav Süresi (dk):"/>
                     <TextBox Text="{Binding VarsayilanSinavSuresi}" Margin="0,5,0,10"/>
-
                     <TextBlock Text="Sınav Arası Bekleme Süresi (dk):"/>
                     <TextBox Text="{Binding VarsayilanBeklemeSuresi}" Margin="0,5,0,0"/>
                 </StackPanel>
@@ -81,12 +78,17 @@
                 </StackPanel>
             </GroupBox>
 
-            <Button Content="Programı Oluştur" 
-                    Command="{Binding ProgramiOlusturCommand}" 
-                    Style="{StaticResource BusyAwareButtonStyle}" 
+            <Button Content="Programı Oluştur"
+                    Command="{Binding ProgramiOlusturCommand}"
+                    Style="{StaticResource BusyAwareButtonStyle}"
                     Height="40" FontWeight="Bold" Background="DarkGreen" Foreground="White" Margin="0,20,0,0"/>
 
-            <ProgressBar Style="{StaticResource BusyIndicatorVisibilityStyle}" 
+            <Button Content="Oturma Planlaması"
+                    Command="{Binding OturmaPlanlamasinaGitCommand}"
+                    IsEnabled="{Binding IsTakvimOlusturuldu}"
+                    Height="40" FontWeight="Bold" Background="#007ACC" Foreground="White" Margin="0,10,0,0"/>
+
+            <ProgressBar Style="{StaticResource BusyIndicatorVisibilityStyle}"
                          IsIndeterminate="True" Height="5" Margin="0,5,0,0"/>
         </StackPanel>
 
@@ -94,14 +96,14 @@
             <DataGrid ItemsSource="{Binding DahilEdilecekDersler}"
                       AutoGenerateColumns="False"
                       CanUserAddRows="False"
-                      HeadersVisibility="Column">
+                      HeadersVisibility="Column"
+                      CanUserResizeColumns="True">
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="Seç" Width="Auto">
                         <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
+                            <DataTemplate DataType="{x:Type vm:DersSecici}">
                                 <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                          HorizontalAlignment="Center"
-                                          VerticalAlignment="Center"/>
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

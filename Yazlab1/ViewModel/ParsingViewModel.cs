@@ -140,7 +140,7 @@ namespace Yazlab1.ViewModel
             if (ofd.ShowDialog() == true)
             {
                 var result = MessageBox.Show(
-                    "Bu işlem, bu bölüme ait mevcut tüm öğrencileri ve ders kayıtlarını silecek ve yerine bu Excel dosyasındakileri ekleyecektir. Devam etmek istediğinizden emin misiniz?",
+                    "Bu işlem, bu bölüme ait mevcut tüm öğrencileri ve ders kayıtlarını silecek (Varsa) ve yerine bu Excel dosyasındakileri ekleyecektir. Devam etmek istediğinizden emin misiniz?",
                     "Uyarı: Veriler Silinecek",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Warning);
