@@ -26,23 +26,67 @@
                 BorderBrush="#d9e1f2"
                 BorderThickness="1"
                 SnapsToDevicePixels="True">
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <TextBlock Text="🎓 Derslik Seçin:"
-                           VerticalAlignment="Center"
-                           FontWeight="Bold"
-                           Foreground="#2b4c7e"
-                           FontSize="14"
-                           Margin="0,0,10,0"/>
-                <ComboBox ItemsSource="{Binding DerslikListesi}"
-                          SelectedItem="{Binding SecilenDerslik, Mode=TwoWay}"
-                          DisplayMemberPath="DerslikAdi"
-                          Width="250"
-                          Margin="0,0,5,0"
-                          FontSize="13"
-                          Background="#eef4ff"
-                          BorderBrush="#cdd7f2"
-                          BorderThickness="1"/>
-            </StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="🎓 Derslik Seçin:"
+                               VerticalAlignment="Center"
+                               FontWeight="Bold"
+                               Foreground="#2b4c7e"
+                               FontSize="14"
+                               Margin="0,0,10,0"/>
+                    <ComboBox ItemsSource="{Binding DerslikListesi}"
+                              SelectedItem="{Binding SecilenDerslik, Mode=TwoWay}"
+                              DisplayMemberPath="DerslikAdi"
+                              Width="250"
+                              Margin="0,0,5,0"
+                              FontSize="13"
+                              Background="#eef4ff"
+                              BorderBrush="#cdd7f2"
+                              BorderThickness="1"/>
+                </StackPanel>
+
+                <Button Grid.Column="1"
+                        Command="{Binding PdfIndir}"
+                        Content="📄 PDF İndir"
+                        Padding="15,8"
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        Background="#4CAF50"
+                        Foreground="White"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        VerticalAlignment="Center">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                CornerRadius="6"
+                                                Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#45a049"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Background" Value="#cccccc"/>
+                                    <Setter Property="Cursor" Value="Arrow"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
         </Border>
 
         <!-- Oturma Planı Alanı -->
