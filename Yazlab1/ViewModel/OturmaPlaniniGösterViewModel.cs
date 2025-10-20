@@ -149,7 +149,7 @@ namespace Yazlab1.ViewModel
                 .Select(o => new { o.Satir, o.Sutun })
                 .ToList();
 
-            int toplamSutunSayisi = derslik.EnineSiraSayisi * derslik.SiraYapisi;
+            int toplamSutunSayisi = derslik.EnineSiraSayisi;
             int toplamSatirSayisi = derslik.BoyunaSiraSayisi;
 
             for (int satir = 1; satir <= toplamSatirSayisi; satir++)
@@ -209,7 +209,7 @@ namespace Yazlab1.ViewModel
             // GÖRSEL İÇİN DOĞRU SATIR/SÜTUN HESAPLAMA
             // Örnek: 7 sütun x 9 satır grid oluştur
 
-            int toplamSutunSayisi = secilenDerslik.EnineSiraSayisi * secilenDerslik.SiraYapisi;
+            int toplamSutunSayisi = secilenDerslik.EnineSiraSayisi;
             int toplamSatirSayisi = secilenDerslik.BoyunaSiraSayisi;
 
             // Tüm grid pozisyonlarını oluştur
