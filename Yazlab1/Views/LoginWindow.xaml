@@ -44,7 +44,7 @@
 
                 <TextBlock Name="ErrorMessageTextBlock" Foreground="Red" Margin="0,10,0,0" TextWrapping="Wrap" TextAlignment="Center"/>
             </StackPanel>
-            <Image HorizontalAlignment="Left" Height="100" Margin="148,-81,0,0" VerticalAlignment="Top" Width="100" Source="/Views/Screenshot_36.png"/>
+            <Image HorizontalAlignment="Left" Height="100" Margin="148,-81,0,0" VerticalAlignment="Top" Width="100" Source="/images/Screenshot_36.png"/>
         </Grid>
     </Border>
 </Window>

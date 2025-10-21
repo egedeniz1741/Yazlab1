@@ -9,6 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="images\bos_koltuk.png" />
+    <None Remove="images\dolu_koltuk.png" />
     <None Remove="Views\Screenshot_36.png" />
   </ItemGroup>
 
@@ -29,11 +31,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="images\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Views\Screenshot_36.png" />
+    <Resource Include="images\bos_koltuk.png" />
+    <Resource Include="images\dolu_koltuk.png" />
+    <Resource Include="images\Screenshot_36.png" />
   </ItemGroup>
 
 </Project>

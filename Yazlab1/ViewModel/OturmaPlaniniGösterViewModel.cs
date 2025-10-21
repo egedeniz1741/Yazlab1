@@ -16,12 +16,50 @@ using System.Windows.Documents;
 
 namespace Yazlab1.ViewModel
 {
+    public class SinifSatiri
+    {
+        public int SatirNumarasi { get; set; }
+        public List<List<KoltukGorunum>> SirayaGoreKoltuklar { get; set; } = new List<List<KoltukGorunum>>();
+    }
+
+    public class KoltukGorunum
+    {
+        public OturmaPlaniOgrenciDetay OturmaDetay { get; set; }
+        public int Satir { get; set; }
+        public int Sira { get; set; }
+        public int KoltukIndex { get; set; }
+
+       
+        public BitmapImage KoltukResim
+        {
+            get
+            {
+               
+                    string resimAdi = OturmaDetay?.Ogrenci != null ? "dolu_koltuk.png" : "bos_koltuk.png";
+                    return new BitmapImage(new Uri($"/images/{resimAdi}", UriKind.Relative));
+               
+            }
+        }
+
+        public string OgrenciAdSoyad => OturmaDetay?.Ogrenci?.AdSoyad ?? "Boş";
+        public string OgrenciNo => OturmaDetay?.Ogrenci?.OgrenciNo ?? "";
+
+     
+        public string PozisyonText => $"S{Satir}-K{Sira}.{KoltukIndex}";
+
+        public string ToolTipText => OturmaDetay?.Ogrenci != null ?
+            $"{OturmaDetay.Ogrenci.AdSoyad}\n{OturmaDetay.Ogrenci.OgrenciNo}\nSıra: {Satir} - Sıra: {Sira} - Koltuk: {KoltukIndex}" :
+            $"Boş koltuk\nSıra: {Satir} - Sıra: {Sira} - Koltuk: {KoltukIndex}";
+    }
     public class OturmaPlaniGosterViewModel : INotifyPropertyChanged
     {
         private Derslik _secilenDerslik;
         private readonly AtanmisSinav _gosterilecekSinav;
         private List<OturmaPlaniOgrenciDetay> _tumYerlesimListesi;
-
+        public ObservableCollection<SinifSatiri> SinifSatirlari { get; private set; }
+        public string SinifDuzeniText => SecilenDerslik != null ?
+            $"{SecilenDerslik.EnineSiraSayisi} sıra × {SecilenDerslik.BoyunaSiraSayisi} sıra × {SecilenDerslik.SiraYapisi} kişilik" :
+            "";
         public string PencereBasligi { get; }
         public ObservableCollection<Derslik> DerslikListesi { get; set; }
         public ObservableCollection<OturmaPlaniOgrenciDetay> GorselOturmaPlani { get; private set; }
@@ -49,6 +87,7 @@ namespace Yazlab1.ViewModel
             var siraliDerslikler = gosterilecekSinav.AtananDerslikler != null
                 ? gosterilecekSinav.AtananDerslikler.OrderBy(d => d.DerslikKodu).ToList()
                 : new List<Derslik>();
+            SinifSatirlari = new ObservableCollection<SinifSatiri>();
 
             DerslikListesi = new ObservableCollection<Derslik>(siraliDerslikler);
             GorselOturmaPlani = new ObservableCollection<OturmaPlaniOgrenciDetay>();
@@ -155,63 +194,78 @@ namespace Yazlab1.ViewModel
             return (0, 0);
         }
 
-        private async void SecilenDerslikDegisti(Derslik secilenDerslik)
+        private ObservableCollection<SinifSatiri> GercekSinifDuzeniOlustur(Derslik secilenDerslik)
         {
-            Application.Current.Dispatcher.Invoke(() => GorselOturmaPlani.Clear());
-            if (secilenDerslik == null || _tumYerlesimListesi == null) return;
-
-            try
-            {
-                var gorselPlan = await Task.Run(() => OturmaPlaniOlusturGorsel(secilenDerslik));
-
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    GorselOturmaPlani.Clear();
-                    if (gorselPlan != null)
-                    {
-                        foreach (var slot in gorselPlan) GorselOturmaPlani.Add(slot);
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Oturma planı oluşturulurken hata: {ex.Message}", "Hata");
-                Application.Current.Dispatcher.Invoke(() => GorselOturmaPlani.Clear());
-            }
-        }
-
-        private ObservableCollection<OturmaPlaniOgrenciDetay> OturmaPlaniOlusturGorsel(Derslik secilenDerslik)
-        {
-            var derslikPlaniGorsel = new ObservableCollection<OturmaPlaniOgrenciDetay>();
-
-            if (secilenDerslik == null) return derslikPlaniGorsel;
-
+            var sinifSatirlari = new ObservableCollection<SinifSatiri>();
             var buDersliktekiOgrenciler = _tumYerlesimListesi
                 .Where(o => o.Derslik?.DerslikID == secilenDerslik.DerslikID)
                 .ToList();
 
-            int toplamSutunSayisi = secilenDerslik.EnineSiraSayisi;
-            int toplamSatirSayisi = secilenDerslik.BoyunaSiraSayisi;
-
-            for (int satir = 1; satir <= toplamSatirSayisi; satir++)
+            // Her satır için
+            for (int satir = 1; satir <= secilenDerslik.BoyunaSiraSayisi; satir++)
             {
-                for (int sutun = 1; sutun <= toplamSutunSayisi; sutun++)
-                {
-                    var ogrenciDetay = buDersliktekiOgrenciler
-                        .FirstOrDefault(o => o.Satir == satir && o.Sutun == sutun);
+                var sinifSatiri = new SinifSatiri { SatirNumarasi = satir };
 
-                    derslikPlaniGorsel.Add(new OturmaPlaniOgrenciDetay
+                // Her sıra için
+                for (int sira = 1; sira <= secilenDerslik.EnineSiraSayisi; sira++)
+                {
+                    var siraKoltuklari = new List<KoltukGorunum>();
+
+                    // Her koltuk için (sıra yapısına göre)
+                    for (int koltuk = 1; koltuk <= secilenDerslik.SiraYapisi; koltuk++)
                     {
-                        Ogrenci = ogrenciDetay?.Ogrenci,
-                        Derslik = secilenDerslik,
-                        Satir = satir,
-                        Sutun = sutun
-                    });
+                        // Bu pozisyondaki öğrenciyi bul
+                        int sutun = ((sira - 1) * secilenDerslik.SiraYapisi) + koltuk;
+                        var ogrenciDetay = buDersliktekiOgrenciler
+                            .FirstOrDefault(o => o.Satir == satir && o.Sutun == sutun);
+
+                        siraKoltuklari.Add(new KoltukGorunum
+                        {
+                            OturmaDetay = ogrenciDetay,
+                            Satir = satir,
+                            Sira = sira,
+                            KoltukIndex = koltuk
+                        });
+                    }
+
+                    sinifSatiri.SirayaGoreKoltuklar.Add(siraKoltuklari);
                 }
+
+                sinifSatirlari.Add(sinifSatiri);
             }
 
-            return derslikPlaniGorsel;
+            return sinifSatirlari;
         }
+        private async void SecilenDerslikDegisti(Derslik secilenDerslik)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                GorselOturmaPlani.Clear();
+                SinifSatirlari.Clear();
+            });
+
+            if (secilenDerslik == null || _tumYerlesimListesi == null) return;
+
+            try
+            {
+                var sinifDuzeni = await Task.Run(() => GercekSinifDuzeniOlustur(secilenDerslik));
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    SinifSatirlari.Clear();
+                    foreach (var satir in sinifDuzeni)
+                        SinifSatirlari.Add(satir);
+
+                    OnPropertyChanged(nameof(SinifDuzeniText));
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Sınıf düzeni oluşturulurken hata: {ex.Message}", "Hata");
+            }
+        }
+
+        
 
         private bool CanPdfOlustur()
         {
