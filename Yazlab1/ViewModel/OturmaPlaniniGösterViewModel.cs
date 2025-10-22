@@ -58,7 +58,7 @@ namespace Yazlab1.ViewModel
         private List<OturmaPlaniOgrenciDetay> _tumYerlesimListesi;
         public ObservableCollection<SinifSatiri> SinifSatirlari { get; private set; }
         public string SinifDuzeniText => SecilenDerslik != null ?
-            $"{SecilenDerslik.EnineSiraSayisi} sıra × {SecilenDerslik.BoyunaSiraSayisi} sıra × {SecilenDerslik.SiraYapisi} kişilik" :
+            $"{SecilenDerslik.EnineSiraSayisi} satır × {SecilenDerslik.BoyunaSiraSayisi} sütun × {SecilenDerslik.SiraYapisi} kişilik" :
             "";
         public string PencereBasligi { get; }
         public ObservableCollection<Derslik> DerslikListesi { get; set; }
@@ -199,31 +199,37 @@ namespace Yazlab1.ViewModel
             var sinifSatirlari = new ObservableCollection<SinifSatiri>();
             var buDersliktekiOgrenciler = _tumYerlesimListesi
                 .Where(o => o.Derslik?.DerslikID == secilenDerslik.DerslikID)
+                .OrderBy(o => o.Ogrenci?.OgrenciNo)
                 .ToList();
 
-            // Her satır için
-            for (int satir = 1; satir <= secilenDerslik.BoyunaSiraSayisi; satir++)
-            {
-                var sinifSatiri = new SinifSatiri { SatirNumarasi = satir };
+            int ogrenciIndex = 0;
+            int toplamOgrenci = buDersliktekiOgrenciler.Count;
 
-                // Her sıra için
-                for (int sira = 1; sira <= secilenDerslik.EnineSiraSayisi; sira++)
+            // DÜZELTME: EnineSiraSayisi = yatay sıra, BoyunaSiraSayisi = dikey sıra
+            for (int yataySira = 1; yataySira <= secilenDerslik.EnineSiraSayisi; yataySira++)
+            {
+                var sinifSatiri = new SinifSatiri { SatirNumarasi = yataySira };
+
+                for (int dikeySira = 1; dikeySira <= secilenDerslik.BoyunaSiraSayisi; dikeySira++)
                 {
                     var siraKoltuklari = new List<KoltukGorunum>();
 
-                    // Her koltuk için (sıra yapısına göre)
                     for (int koltuk = 1; koltuk <= secilenDerslik.SiraYapisi; koltuk++)
                     {
-                        // Bu pozisyondaki öğrenciyi bul
-                        int sutun = ((sira - 1) * secilenDerslik.SiraYapisi) + koltuk;
-                        var ogrenciDetay = buDersliktekiOgrenciler
-                            .FirstOrDefault(o => o.Satir == satir && o.Sutun == sutun);
+                        bool buKoltukDoluMu = KoltukDagilimKontrolu(secilenDerslik.SiraYapisi, koltuk, dikeySira, yataySira);
+                        OturmaPlaniOgrenciDetay ogrenciDetay = null;
+
+                        if (buKoltukDoluMu && ogrenciIndex < toplamOgrenci)
+                        {
+                            ogrenciDetay = buDersliktekiOgrenciler[ogrenciIndex];
+                            ogrenciIndex++;
+                        }
 
                         siraKoltuklari.Add(new KoltukGorunum
                         {
                             OturmaDetay = ogrenciDetay,
-                            Satir = satir,
-                            Sira = sira,
+                            Satir = yataySira,        // Yatay sıra numarası
+                            Sira = dikeySira,         // Dikey sıra numarası  
                             KoltukIndex = koltuk
                         });
                     }
@@ -234,8 +240,42 @@ namespace Yazlab1.ViewModel
                 sinifSatirlari.Add(sinifSatiri);
             }
 
+          
             return sinifSatirlari;
         }
+
+
+        private bool KoltukDagilimKontrolu(int siraYapisi, int koltukIndex, int sutunNumarasi, int satirumarasi)
+        {
+
+            if (siraYapisi == 1)
+                return true;
+
+            if (siraYapisi == 2)
+            {
+                // Çapraz dağılım: her satırda farklı koltuk dolu
+                return (sutunNumarasi % 2 == 1) ? (koltukIndex == 1) : (koltukIndex == 2);
+            }
+
+            if (siraYapisi == 3)
+            {
+                // Kenarlar dolu, ortası boş - satırlara göre değişken
+                return (sutunNumarasi % 2 == 1) ? (koltukIndex != 2) : (koltukIndex == 2);
+            }
+
+            if (siraYapisi == 4)
+            {
+               
+                    return koltukIndex == 1 || koltukIndex == 4;
+               
+            }
+
+            // 5+ için genel çözüm
+            return (koltukIndex % 2 == 1) && (sutunNumarasi % 2 == 1) ||
+                   (koltukIndex % 2 == 0) && (sutunNumarasi % 2 == 0);
+        }
+
+
         private async void SecilenDerslikDegisti(Derslik secilenDerslik)
         {
             Application.Current.Dispatcher.Invoke(() =>

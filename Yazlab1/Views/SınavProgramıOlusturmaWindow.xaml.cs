@@ -23,6 +23,8 @@ namespace Yazlab1.Views
             InitializeComponent();
             this.DataContext = new SinavProgramiOlusturmaViewModel(aktifKullanici);
         }
+
+       
     }
 
 }
