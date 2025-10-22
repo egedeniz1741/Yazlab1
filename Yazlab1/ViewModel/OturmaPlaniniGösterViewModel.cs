@@ -416,71 +416,105 @@ namespace Yazlab1.ViewModel
 
         private System.Windows.Documents.Table DerslikTablosuOlustur(Derslik derslik)
         {
-            var buDersliktekiOgrenciler = _tumYerlesimListesi
-                .Where(o => o.Derslik?.DerslikID == derslik.DerslikID)
-                .ToList();
-
-            int sutunSayisi = derslik.EnineSiraSayisi;
-            int satirSayisi = derslik.BoyunaSiraSayisi;
+            // Gerçek sınıf düzenini oluştur
+            var sinifDuzeni = GercekSinifDuzeniOlustur(derslik);
 
             var table = new System.Windows.Documents.Table
             {
-                CellSpacing = 1,
+                CellSpacing = 2,
                 BorderBrush = Brushes.Black,
                 BorderThickness = new Thickness(1)
             };
 
-            // Sütunları ekle
-            for (int i = 0; i < sutunSayisi; i++)
+            // Sütun sayısı: SiraYapisi + 1 (başlık sütunu için)
+            table.Columns.Add(new System.Windows.Documents.TableColumn { Width = new GridLength(80) }); // Başlık
+            for (int i = 0; i < derslik.SiraYapisi; i++)
             {
                 table.Columns.Add(new System.Windows.Documents.TableColumn());
             }
 
             var rowGroup = new System.Windows.Documents.TableRowGroup();
 
-            // Satırları ekle
-            for (int satir = 1; satir <= satirSayisi; satir++)
+            // Her yatay sıra için
+            foreach (var sinifSatiri in sinifDuzeni)
             {
-                var tableRow = new System.Windows.Documents.TableRow();
-
-                for (int sutun = 1; sutun <= sutunSayisi; sutun++)
+                // Her dikey sıra için AYRI BİR TABLO SATIRI oluştur
+                for (int dikeySiraIndex = 0; dikeySiraIndex < sinifSatiri.SirayaGoreKoltuklar.Count; dikeySiraIndex++)
                 {
-                    var ogrenciDetay = buDersliktekiOgrenciler
-                        .FirstOrDefault(o => o.Satir == satir && o.Sutun == sutun);
+                    var tableRow = new System.Windows.Documents.TableRow();
+                    var siraKoltuklari = sinifSatiri.SirayaGoreKoltuklar[dikeySiraIndex];
 
-                    string icerik = "";
-                    Brush arkaplan = Brushes.White;
-
-                    if (ogrenciDetay?.Ogrenci != null)
+                    // İlk sütun: Sıra bilgisi
+                    var baslikCell = new System.Windows.Documents.TableCell(
+                        new Paragraph(new Run($"Sıra {sinifSatiri.SatirNumarasi}-{dikeySiraIndex + 1}"))
+                        {
+                            FontSize = 10,
+                            FontWeight = FontWeights.Bold,
+                            TextAlignment = TextAlignment.Center,
+                            Margin = new Thickness(2)
+                        })
                     {
-                        icerik = $"{ogrenciDetay.Ogrenci.AdSoyad}\n({ogrenciDetay.Ogrenci.OgrenciNo})\nSatır: {satir} / Sütun: {sutun}";
-                        arkaplan = new SolidColorBrush(Color.FromRgb(245, 248, 255));
-                    }
-                    else
-                    {
-                        icerik = "BOŞ";
-                        arkaplan = Brushes.White;
-                    }
-
-                    var cellPara = new Paragraph(new Run(icerik))
-                    {
-                        FontSize = 9,
-                        TextAlignment = TextAlignment.Center,
-                        Margin = new Thickness(3)
-                    };
-
-                    var cell = new System.Windows.Documents.TableCell(cellPara)
-                    {
-                        BorderBrush = new SolidColorBrush(Color.FromRgb(197, 210, 224)),
+                        BorderBrush = new SolidColorBrush(Color.FromRgb(43, 76, 126)),
                         BorderThickness = new Thickness(1),
                         Padding = new Thickness(5),
-                        Background = arkaplan
+                        Background = new SolidColorBrush(Color.FromRgb(220, 230, 245))
                     };
+                    tableRow.Cells.Add(baslikCell);
 
-                    tableRow.Cells.Add(cell);
+                    // Koltuklar
+                    foreach (var koltuk in siraKoltuklari)
+                    {
+                        string icerik = "";
+                        Brush arkaplan = Brushes.White;
+                        Brush kenarlık = new SolidColorBrush(Color.FromRgb(197, 210, 224));
+
+                        if (koltuk.OturmaDetay?.Ogrenci != null)
+                        {
+                            icerik = $"{koltuk.OturmaDetay.Ogrenci.AdSoyad}\n({koltuk.OturmaDetay.Ogrenci.OgrenciNo})";
+                            arkaplan = new SolidColorBrush(Color.FromRgb(245, 248, 255));
+                            kenarlık = new SolidColorBrush(Color.FromRgb(100, 150, 200));
+                        }
+                        else
+                        {
+                            icerik = "BOŞ";
+                            arkaplan = new SolidColorBrush(Color.FromRgb(250, 250, 250));
+                        }
+
+                        var cellPara = new Paragraph(new Run(icerik))
+                        {
+                            FontSize = 9,
+                            TextAlignment = TextAlignment.Center,
+                            Margin = new Thickness(2),
+                            LineHeight = 1
+                        };
+
+                        var cell = new System.Windows.Documents.TableCell(cellPara)
+                        {
+                            BorderBrush = kenarlık,
+                            BorderThickness = new Thickness(1),
+                            Padding = new Thickness(4),
+                            Background = arkaplan
+                        };
+
+                        tableRow.Cells.Add(cell);
+                    }
+
+                    rowGroup.Rows.Add(tableRow);
                 }
 
-                rowGroup.Rows.Add(tableRow);
+                // Her yatay sıra sonrası boşluk satırı (opsiyonel - görsel ayırım için)
+                if (sinifSatiri != sinifDuzeni.Last())
+                {
+                    var ayiriciRow = new System.Windows.Documents.TableRow { Background = Brushes.LightGray };
+                    var ayiriciCell = new System.Windows.Documents.TableCell(
+                        new Paragraph(new Run("")) { Margin = new Thickness(0), FontSize = 4 })
+                    {
+                        ColumnSpan = derslik.SiraYapisi + 1,
+                        Padding = new Thickness(0)
+                    };
+                    ayiriciRow.Cells.Add(ayiriciCell);
+                    rowGroup.Rows.Add(ayiriciRow);
+                }
             }
 
             table.RowGroups.Add(rowGroup);
