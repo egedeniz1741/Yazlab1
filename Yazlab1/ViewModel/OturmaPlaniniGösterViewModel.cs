@@ -253,8 +253,8 @@ namespace Yazlab1.ViewModel
 
             if (siraYapisi == 2)
             {
-                // Çapraz dağılım: her satırda farklı koltuk dolu
-                return (sutunNumarasi % 2 == 1) ? (koltukIndex == 1) : (koltukIndex == 2);
+
+                return koltukIndex == 1;
             }
 
             if (siraYapisi == 3)
