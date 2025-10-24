@@ -152,7 +152,7 @@ namespace Yazlab1.ViewModel
                     await ExcelRaporuOlustur(takvim);
                     _sonOlusturulanTakvim = takvim;
                     IsTakvimOlusturuldu = true;
-                    MessageBox.Show($"Sınav programı başarıyla oluşturuldu ve Excel'e kaydedildi!", "Başarılı");
+                    MessageBox.Show($"Sınav programı başarıyla oluşturuldu ve Excel'e kaydedildi!\n\n{log}", "Başarılı");
                 }
                 else
                 {
@@ -190,6 +190,7 @@ namespace Yazlab1.ViewModel
             var ogrenciProgrami = new Dictionary<int, List<AtanmisSinav>>();
             var derslikProgrami = new Dictionary<DateTime, Dictionary<TimeSpan, HashSet<int>>>();
             var derslikKullanımSayisi = new Dictionary<int, int>();
+            var sinifGunlukSinav = new Dictionary<DateTime, Dictionary<int, int>>();
 
             foreach (var derslik in derslikler)
             {
@@ -201,23 +202,25 @@ namespace Yazlab1.ViewModel
             foreach (var sinav in siraliSinavlar)
             {
                 bool yerlestirildi = false;
+                int dersSinifi = DersKodundanSinifGetir(sinav.Ders?.DersKodu);
 
                 for (var gun = _sinavBaslangicTarihi.Date; gun <= _sinavBitisTarihi.Date; gun = gun.AddDays(1))
                 {
                     int dayIndex = (int)gun.DayOfWeek == 0 ? 6 : (int)gun.DayOfWeek - 1;
                     if (!Gunler[dayIndex]) continue;
 
-                   
+                    // Sınıf bazlı günlük sınav kontrolü
+                    if (!SinifIcinGunlukSinavKontrolu(dersSinifi, gun, sinifGunlukSinav))
+                        continue;
+
                     for (var saat = new TimeSpan(SinavBaslangicSaati, 0, 0);
                          saat <= new TimeSpan(SinavBitisSaati - 1, 30, 0);
                          saat = saat.Add(TimeSpan.FromMinutes(30)))
                     {
-                       
                         TimeSpan bitisSaati = saat.Add(TimeSpan.FromMinutes(sinav.SinavSuresi));
                         if (bitisSaati > new TimeSpan(SinavBitisSaati, 0, 0))
                             continue;
 
-                        
                         bool ogrenciCakismasiVar = sinav.Ogrenciler.Any(ogrenci =>
                             ogrenciProgrami.TryGetValue(ogrenci.OgrenciID, out var ogrencininSinavlari) &&
                             ogrencininSinavlari.Any(s => s.Tarih.Date == gun.Date &&
@@ -226,7 +229,6 @@ namespace Yazlab1.ViewModel
                                                         (saat <= s.BaslangicSaati && bitisSaati >= s.BitisSaati))));
                         if (ogrenciCakismasiVar) continue;
 
-                       
                         bool beklemeSuresiUygun = true;
                         foreach (var ogrenci in sinav.Ogrenciler)
                         {
@@ -249,7 +251,6 @@ namespace Yazlab1.ViewModel
                         }
                         if (!beklemeSuresiUygun) continue;
 
-                        // Derslik uygunluğu kontrolü
                         var uygunDerslikler = UygunDerslikleriBul(derslikler, derslikProgrami, gun, saat, bitisSaati, derslikKullanımSayisi, sinav.OgrenciSayisi);
 
                         if (uygunDerslikler.Any())
@@ -270,6 +271,13 @@ namespace Yazlab1.ViewModel
                                     ogrenciProgrami[ogrenci.OgrenciID] = new List<AtanmisSinav>();
                                 ogrenciProgrami[ogrenci.OgrenciID].Add(atama);
                             }
+
+                            // Sınıf bazlı programı güncelle
+                            if (!sinifGunlukSinav.ContainsKey(gun.Date))
+                                sinifGunlukSinav[gun.Date] = new Dictionary<int, int>();
+                            if (!sinifGunlukSinav[gun.Date].ContainsKey(dersSinifi))
+                                sinifGunlukSinav[gun.Date][dersSinifi] = 0;
+                            sinifGunlukSinav[gun.Date][dersSinifi]++;
 
                             for (var derslikSaat = saat; derslikSaat < bitisSaati; derslikSaat = derslikSaat.Add(TimeSpan.FromMinutes(30)))
                             {
@@ -292,13 +300,51 @@ namespace Yazlab1.ViewModel
                     if (yerlestirildi) break;
                 }
 
-                if (!yerlestirildi)
-                {
-                    log.AppendLine($"'({sinav.Ders?.DersKodu ?? "N/A"}) {sinav.Ders?.DersAdi ?? "Bilinmeyen"}' dersinin sınavı yerleştirilemedi!");
-                    return null;
-                }
+               
             }
+
+           
+
+        
+          
+
             return takvim;
+        }
+
+        private bool SinifIcinGunlukSinavKontrolu(int sinif, DateTime tarih, Dictionary<DateTime, Dictionary<int, int>> sinifGunlukSinav)
+        {
+            if (!sinifGunlukSinav.ContainsKey(tarih.Date))
+                sinifGunlukSinav[tarih.Date] = new Dictionary<int, int>();
+
+            var gununSiniflari = sinifGunlukSinav[tarih.Date];
+
+            // Sınıf için günlük maksimum sınav sayısı
+            int maksimumSinav = 2;
+
+            if (gununSiniflari.ContainsKey(sinif) && gununSiniflari[sinif] >= maksimumSinav)
+                return false;
+
+            return true;
+        }
+
+        private int DersKodundanSinifGetir(string dersKodu)
+        {
+            if (string.IsNullOrEmpty(dersKodu))
+                return 0;
+
+            var dersKoduTemiz = dersKodu.ToUpper().Trim();
+            var sayisalKisim = new string(dersKoduTemiz.Where(char.IsDigit).ToArray());
+
+            if (sayisalKisim.Length >= 3)
+            {
+                int dersKoduSayi = int.Parse(sayisalKisim);
+                int sinif = dersKoduSayi / 100;
+
+                if (sinif >= 1 && sinif <= 4)
+                    return sinif;
+            }
+
+            return 0;
         }
 
         private List<Derslik> UygunDerslikleriBul(List<Derslik> derslikler,
