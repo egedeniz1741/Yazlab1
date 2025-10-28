@@ -209,27 +209,53 @@ namespace Yazlab1.ViewModel
                     int dayIndex = (int)gun.DayOfWeek == 0 ? 6 : (int)gun.DayOfWeek - 1;
                     if (!Gunler[dayIndex]) continue;
 
-                
                     if (!SinifIcinGunlukSinavKontrolu(dersSinifi, gun, sinifGunlukSinav))
                         continue;
-                    int slotAraligi = sinav.SinavSuresi + VarsayilanBeklemeSuresi;
 
+                    
                     for (var saat = new TimeSpan(SinavBaslangicSaati, 0, 0);
-                         saat <= new TimeSpan(SinavBitisSaati - 1, 0, 0);
-                         saat = saat.Add(TimeSpan.FromMinutes(slotAraligi)))
+                         saat <= new TimeSpan(SinavBitisSaati, 0, 0).Add(TimeSpan.FromMinutes(-sinav.SinavSuresi - VarsayilanBeklemeSuresi));
+                         saat = saat.Add(TimeSpan.FromMinutes(15)))
                     {
-                        TimeSpan bitisSaati = saat.Add(TimeSpan.FromMinutes(sinav.SinavSuresi+VarsayilanBeklemeSuresi));
-                        if (bitisSaati > new TimeSpan(SinavBitisSaati, 0, 0))
+                 
+                        TimeSpan bitisSaati = saat.Add(TimeSpan.FromMinutes(sinav.SinavSuresi));
+                        TimeSpan sonrakiSınavIcinUygunBaslangic = bitisSaati.Add(TimeSpan.FromMinutes(VarsayilanBeklemeSuresi));
+
+                       
+                        if (sonrakiSınavIcinUygunBaslangic > new TimeSpan(SinavBitisSaati, 0, 0))
                             continue;
 
-                        bool ogrenciCakismasiVar = sinav.Ogrenciler.Any(ogrenci =>
-                            ogrenciProgrami.TryGetValue(ogrenci.OgrenciID, out var ogrencininSinavlari) &&
-                            ogrencininSinavlari.Any(s => s.Tarih.Date == gun.Date &&
-                                                       ((saat >= s.BaslangicSaati && saat < s.BitisSaati) ||
-                                                        (bitisSaati > s.BaslangicSaati && bitisSaati <= s.BitisSaati) ||
-                                                        (saat <= s.BaslangicSaati && bitisSaati >= s.BitisSaati))));
+                       
+                        bool ogrenciCakismasiVar = false;
+                        foreach (var ogrenci in sinav.Ogrenciler)
+                        {
+                            if (ogrenciProgrami.TryGetValue(ogrenci.OgrenciID, out var ogrencininSinavlari))
+                            {
+                                foreach (var oncekiSinav in ogrencininSinavlari)
+                                {
+                                    if (oncekiSinav.Tarih.Date == gun.Date)
+                                    {
+                                       
+                                        TimeSpan buSinavBitisBekleme = bitisSaati.Add(TimeSpan.FromMinutes(VarsayilanBeklemeSuresi));
+                                        TimeSpan oncekiSinavBitisBekleme = oncekiSinav.BitisSaati.Add(TimeSpan.FromMinutes(VarsayilanBeklemeSuresi));
+
+                                        
+                                        bool cakismaVar =
+                                            (saat < oncekiSinavBitisBekleme && buSinavBitisBekleme > oncekiSinav.BaslangicSaati);
+
+                                        if (cakismaVar)
+                                        {
+                                            ogrenciCakismasiVar = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            if (ogrenciCakismasiVar) break;
+                        }
                         if (ogrenciCakismasiVar) continue;
 
+                      
                         bool beklemeSuresiUygun = true;
                         foreach (var ogrenci in sinav.Ogrenciler)
                         {
@@ -239,18 +265,15 @@ namespace Yazlab1.ViewModel
                                 {
                                     if (oncekiSinav.Tarih.Date == gun.Date)
                                     {
-                                        TimeSpan fark = saat - oncekiSinav.BitisSaati;
-                                        if (fark.TotalMinutes < VarsayilanBeklemeSuresi && fark.TotalMinutes > 0)
+                                       
+                                        TimeSpan oncekiSonrasiBekleme = saat - oncekiSinav.BitisSaati;
+                                        if (oncekiSonrasiBekleme.TotalMinutes < VarsayilanBeklemeSuresi)
                                         {
                                             beklemeSuresiUygun = false;
                                             break;
                                         }
-                                        TimeSpan sonrakiFark = oncekiSinav.BaslangicSaati - bitisSaati;
-                                        if (sonrakiFark.TotalMinutes < VarsayilanBeklemeSuresi && sonrakiFark.TotalMinutes > 0)
-                                        {
-                                            beklemeSuresiUygun = false;
-                                            break;
-                                        }
+
+                                      
                                     }
                                 }
                             }
@@ -258,7 +281,10 @@ namespace Yazlab1.ViewModel
                         }
                         if (!beklemeSuresiUygun) continue;
 
-                        var uygunDerslikler = UygunDerslikleriBul(derslikler, derslikProgrami, gun, saat, bitisSaati, derslikKullanımSayisi, sinav.OgrenciSayisi);
+                       
+                        var uygunDerslikler = UygunDerslikleriBul(derslikler, derslikProgrami, gun, saat,
+                            bitisSaati.Add(TimeSpan.FromMinutes(VarsayilanBeklemeSuresi)), 
+                            derslikKullanımSayisi, sinav.OgrenciSayisi);
 
                         if (uygunDerslikler.Any())
                         {
@@ -272,6 +298,7 @@ namespace Yazlab1.ViewModel
                             };
                             takvim.Add(atama);
 
+                      
                             foreach (var ogrenci in sinav.Ogrenciler)
                             {
                                 if (!ogrenciProgrami.ContainsKey(ogrenci.OgrenciID))
@@ -286,7 +313,9 @@ namespace Yazlab1.ViewModel
                                 sinifGunlukSinav[gun.Date][dersSinifi] = 0;
                             sinifGunlukSinav[gun.Date][dersSinifi]++;
 
-                            for (var derslikSaat = saat; derslikSaat < bitisSaati; derslikSaat = derslikSaat.Add(TimeSpan.FromMinutes(30)))
+                           
+                            for (var derslikSaat = saat; derslikSaat < bitisSaati.Add(TimeSpan.FromMinutes(_varsayilanBeklemeSuresi));
+                                 derslikSaat = derslikSaat.Add(TimeSpan.FromMinutes(15)))
                             {
                                 if (!derslikProgrami.ContainsKey(gun))
                                     derslikProgrami[gun] = new Dictionary<TimeSpan, HashSet<int>>();
@@ -301,6 +330,7 @@ namespace Yazlab1.ViewModel
                             }
 
                             yerlestirildi = true;
+                           
                             break;
                         }
                     }
@@ -309,11 +339,6 @@ namespace Yazlab1.ViewModel
 
                
             }
-
-           
-
-        
-          
 
             return takvim;
         }
@@ -325,7 +350,7 @@ namespace Yazlab1.ViewModel
 
             var gununSiniflari = sinifGunlukSinav[tarih.Date];
 
-            // Sınıf için günlük maksimum sınav sayısı
+        
             int maksimumSinav = 2;
 
             if (gununSiniflari.ContainsKey(sinif) && gununSiniflari[sinif] >= maksimumSinav)
