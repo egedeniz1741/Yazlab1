@@ -205,7 +205,7 @@ namespace Yazlab1.ViewModel
             int ogrenciIndex = 0;
             int toplamOgrenci = buDersliktekiOgrenciler.Count;
 
-            // DÜZELTME: EnineSiraSayisi = yatay sıra, BoyunaSiraSayisi = dikey sıra
+           
             for (int yataySira = 1; yataySira <= secilenDerslik.EnineSiraSayisi; yataySira++)
             {
                 var sinifSatiri = new SinifSatiri { SatirNumarasi = yataySira };
@@ -228,8 +228,8 @@ namespace Yazlab1.ViewModel
                         siraKoltuklari.Add(new KoltukGorunum
                         {
                             OturmaDetay = ogrenciDetay,
-                            Satir = yataySira,        // Yatay sıra numarası
-                            Sira = dikeySira,         // Dikey sıra numarası  
+                            Satir = yataySira,      
+                            Sira = dikeySira,           
                             KoltukIndex = koltuk
                         });
                     }
@@ -259,7 +259,7 @@ namespace Yazlab1.ViewModel
 
             if (siraYapisi == 3)
             {
-                // Kenarlar dolu, ortası boş - satırlara göre değişken
+              
                 return (sutunNumarasi % 2 == 1) ? (koltukIndex != 2) : (koltukIndex == 2);
             }
 
@@ -270,7 +270,7 @@ namespace Yazlab1.ViewModel
                
             }
 
-            // 5+ için genel çözüm
+         
             return (koltukIndex % 2 == 1) && (sutunNumarasi % 2 == 1) ||
                    (koltukIndex % 2 == 0) && (sutunNumarasi % 2 == 0);
         }
@@ -320,14 +320,14 @@ namespace Yazlab1.ViewModel
 
                 if (printDialog.ShowDialog() == true)
                 {
-                    // Tüm derslikler için belge oluştur
+                
                     var flowDoc = TumDersliklerIcinDokumanOlustur();
 
-                    // Sayfa ayarları
+                   
                     flowDoc.PageHeight = printDialog.PrintableAreaHeight;
                     flowDoc.PageWidth = printDialog.PrintableAreaWidth;
 
-                    // Yazdır veya PDF'e kaydet
+               
                     IDocumentPaginatorSource idpSource = flowDoc;
                     printDialog.PrintDocument(idpSource.DocumentPaginator, "Oturma Planı");
 
@@ -351,7 +351,7 @@ namespace Yazlab1.ViewModel
                 ColumnWidth = double.PositiveInfinity
             };
 
-            // Başlık
+     
             var baslik = new Paragraph(new Run("SINAV OTURMA PLANI"))
             {
                 FontSize = 22,
@@ -379,14 +379,13 @@ namespace Yazlab1.ViewModel
             };
             flowDoc.Blocks.Add(tarih);
 
-            // Her derslik için
             var derslikler = _gosterilecekSinav.AtananDerslikler?.OrderBy(d => d.DerslikKodu).ToList() ?? new List<Derslik>();
 
             foreach (var derslik in derslikler)
             {
                 if (derslik == null) continue;
 
-                // Derslik başlığı
+                
                 var derslikBaslik = new Paragraph(new Run($"📍 {derslik.DerslikAdi}"))
                 {
                     FontSize = 14,
@@ -396,11 +395,11 @@ namespace Yazlab1.ViewModel
                 };
                 flowDoc.Blocks.Add(derslikBaslik);
 
-                // Tablo oluştur
+             
                 var table = DerslikTablosuOlustur(derslik);
                 flowDoc.Blocks.Add(table);
 
-                // Son derslik değilse sayfa ayırıcı
+              
                 if (derslik != derslikler.Last())
                 {
                     var ayirici = new Paragraph(new Run(""))
@@ -416,7 +415,7 @@ namespace Yazlab1.ViewModel
 
         private System.Windows.Documents.Table DerslikTablosuOlustur(Derslik derslik)
         {
-            // Gerçek sınıf düzenini oluştur
+          
             var sinifDuzeni = GercekSinifDuzeniOlustur(derslik);
 
             var table = new System.Windows.Documents.Table
@@ -426,7 +425,7 @@ namespace Yazlab1.ViewModel
                 BorderThickness = new Thickness(1)
             };
 
-            // Sütun sayısı: SiraYapisi + 1 (başlık sütunu için)
+         
             table.Columns.Add(new System.Windows.Documents.TableColumn { Width = new GridLength(80) }); // Başlık
             for (int i = 0; i < derslik.SiraYapisi; i++)
             {
@@ -435,16 +434,14 @@ namespace Yazlab1.ViewModel
 
             var rowGroup = new System.Windows.Documents.TableRowGroup();
 
-            // Her yatay sıra için
             foreach (var sinifSatiri in sinifDuzeni)
             {
-                // Her dikey sıra için AYRI BİR TABLO SATIRI oluştur
+           
                 for (int dikeySiraIndex = 0; dikeySiraIndex < sinifSatiri.SirayaGoreKoltuklar.Count; dikeySiraIndex++)
                 {
                     var tableRow = new System.Windows.Documents.TableRow();
                     var siraKoltuklari = sinifSatiri.SirayaGoreKoltuklar[dikeySiraIndex];
 
-                    // İlk sütun: Sıra bilgisi
                     var baslikCell = new System.Windows.Documents.TableCell(
                         new Paragraph(new Run($"Sıra {sinifSatiri.SatirNumarasi}-{dikeySiraIndex + 1}"))
                         {
@@ -461,7 +458,6 @@ namespace Yazlab1.ViewModel
                     };
                     tableRow.Cells.Add(baslikCell);
 
-                    // Koltuklar
                     foreach (var koltuk in siraKoltuklari)
                     {
                         string icerik = "";
@@ -502,7 +498,7 @@ namespace Yazlab1.ViewModel
                     rowGroup.Rows.Add(tableRow);
                 }
 
-                // Her yatay sıra sonrası boşluk satırı (opsiyonel - görsel ayırım için)
+           
                 if (sinifSatiri != sinifDuzeni.Last())
                 {
                     var ayiriciRow = new System.Windows.Documents.TableRow { Background = Brushes.LightGray };

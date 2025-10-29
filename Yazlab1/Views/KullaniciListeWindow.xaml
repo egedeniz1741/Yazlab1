@@ -1,0 +1,59 @@
+﻿<Window x:Class="Yazlab1.Views.KullaniciListeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Tüm Kullanıcılar" Height="600" Width="800"
+        WindowStartupLocation="CenterOwner"
+        Background="#F4F7FC">
+
+    <Grid Margin="20">
+        <Border Background="White" CornerRadius="10" Padding="20"
+                BorderBrush="#E0E0E0" BorderThickness="1">
+            <Border.Effect>
+                <DropShadowEffect Color="Gray" Opacity="0.2" BlurRadius="10" ShadowDepth="2"/>
+            </Border.Effect>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Başlık -->
+                <TextBlock Grid.Row="0" Text="Tüm Kullanıcılar" 
+                           FontSize="24" FontWeight="Bold" 
+                           Foreground="#2C3E50" Margin="0,0,0,20"/>
+
+                <!-- Kullanıcı Listesi -->
+                <DataGrid Grid.Row="1" x:Name="dgKullanicilar"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          SelectionMode="Single"
+                          SelectionUnit="FullRow"
+                          HeadersVisibility="Column"
+                          BorderThickness="0"
+                          Background="Transparent">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Ad Soyad" Binding="{Binding AdSoyad}" Width="200"/>
+                        <DataGridTextColumn Header="E-posta" Binding="{Binding Eposta}" Width="200"/>
+                        <DataGridTextColumn Header="Rol" Binding="{Binding Rol.RolAdi}" Width="120"/>
+                        <DataGridTextColumn Header="Bölüm" Binding="{Binding Bolum.BolumAdi}" Width="150"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <!-- Sil Butonu -->
+                <Button Grid.Row="2" x:Name="btnKullaniciSil" Content="Seçili Kullanıcıyı Sil" 
+                        Height="40" FontSize="14" FontWeight="Bold" 
+                        Background="#E74C3C" Foreground="White"
+                        BorderThickness="0" Cursor="Hand" Margin="0,20,0,0"
+                        Click="BtnKullaniciSil_Click">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="5"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

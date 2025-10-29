@@ -215,7 +215,7 @@ namespace Yazlab1.ViewModel
                     
                     for (var saat = new TimeSpan(SinavBaslangicSaati, 0, 0);
                          saat <= new TimeSpan(SinavBitisSaati, 0, 0).Add(TimeSpan.FromMinutes(-sinav.SinavSuresi - VarsayilanBeklemeSuresi));
-                         saat = saat.Add(TimeSpan.FromMinutes(15)))
+                         saat = saat.Add(TimeSpan.FromMinutes(5)))
                     {
                  
                         TimeSpan bitisSaati = saat.Add(TimeSpan.FromMinutes(sinav.SinavSuresi));

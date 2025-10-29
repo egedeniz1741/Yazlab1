@@ -1,11 +1,11 @@
 ﻿using System.Windows;
-using Yazlab1.ViewModel; // Gerekli namespace
+using Yazlab1.ViewModel; 
 
 namespace Yazlab1.Views
 {
     public partial class OturmaPlaniGosterWindow : Window
     {
-        // Constructor, seçilen sınavı ve başlığı parametre olarak alır
+   
         public OturmaPlaniGosterWindow(AtanmisSinav secilenSinav, string sinavAdiBasligi)
         {
             InitializeComponent();

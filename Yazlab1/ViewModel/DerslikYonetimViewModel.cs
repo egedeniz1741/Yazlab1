@@ -37,7 +37,7 @@ namespace Yazlab1.ViewModel
 
             if (_aktifKullaniciBolumId == 0)
             {
-                _aktifKullaniciBolumId = 1; // kotu cozum ama baska turlu yapamadim valla 
+                _aktifKullaniciBolumId = 1; 
             }
 
 

@@ -42,7 +42,7 @@ namespace Yazlab1.Views
                 if (user != null && userrolu != null)
                 {
 
-                    if (user.SifreHash == password) //sonra hashli sifreyle kontrol edeceğiz burayı
+                    if (user.SifreHash == password) 
                     {
 
                         if(userrolu.Rol.RolAdi == "Bölüm Koordinatörü") 

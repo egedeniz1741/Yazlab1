@@ -24,7 +24,7 @@ namespace Yazlab1.Views
             this.DataContext = new SinavProgramiOlusturmaViewModel(aktifKullanici);
         }
 
-       
+      
     }
 
 }

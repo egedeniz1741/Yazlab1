@@ -3,9 +3,7 @@
 
 namespace Yazlab1.ViewModel 
 {
-    /// <summary>
-    /// Görselleştirmede ve hesaplamalarda kullanılacak öğrenci oturma bilgisi.
-    /// </summary>
+
     public class OturmaPlaniOgrenciDetay
     {
         public Ogrenci Ogrenci { get; set; }

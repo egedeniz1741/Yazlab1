@@ -59,8 +59,6 @@
                     <TextBox Text="{Binding SinavBaslangicSaati}" Margin="0,5,0,10"/>
                     <TextBlock Text="Sınav Bitiş Saati (Örn: 17):"/>
                     <TextBox Text="{Binding SinavBitisSaati}" Margin="0,5,0,10"/>
-                    <TextBlock Text="Varsayılan Sınav Süresi (dk):"/>
-                    <TextBox Text="{Binding VarsayilanSinavSuresi}" Margin="0,5,0,10"/>
                     <TextBlock Text="Sınav Arası Bekleme Süresi (dk):"/>
                     <TextBox Text="{Binding VarsayilanBeklemeSuresi}" Margin="0,5,0,0"/>
                 </StackPanel>

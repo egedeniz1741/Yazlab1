@@ -1,15 +1,15 @@
-﻿using System.Collections.Generic; // List<> kullanmak için eklendi
+﻿using System.Collections.Generic; 
 using System.Windows;
-using Yazlab1.ViewModel; // SinavOturmaPlaniViewModel ve AtanmisSinav sınıflarını tanımak için
+using Yazlab1.ViewModel;
 
-namespace Yazlab1.Views // Namespace'inizin bu olduğundan emin olun
+namespace Yazlab1.Views 
 {
     /// <summary>
     /// SinavOturmaPlaniWindow.xaml etkileşim mantığı
     /// </summary>
     public partial class SinavOturmaPlaniWindow : Window
     {
-        // Constructor artık List<AtanmisSinav> ve string parametrelerini alıyor
+      
         public SinavOturmaPlaniWindow(List<AtanmisSinav> tumSinavlar, string sinavAdiBasligi)
         {
             InitializeComponent();
