@@ -21,9 +21,7 @@ namespace Yazlab1
             this.DataContext = _viewModel;
         }
 
-        /// <summary>
-        /// "Kullanıcı Ekle" butonuna tıklandığında çalışır.
-        /// </summary>
+     
         private void BtnKullaniciEkle_Click(object sender, RoutedEventArgs e)
         {
       
@@ -39,9 +37,7 @@ namespace Yazlab1
             txtPassword.Password = "";
         }
 
-        /// <summary>
-        /// Sağ taraftaki bölüm butonlarından herhangi birine tıklandığında çalışır.
-        /// </summary>
+      
         private void BtnBolumeGit_Click(object sender, RoutedEventArgs e)
         {
            

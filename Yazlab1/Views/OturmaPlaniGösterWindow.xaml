@@ -13,11 +13,11 @@
         WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
-        <!-- Resimleri proje kaynaklarına ekle -->
+   
         <BitmapImage x:Key="DoluKoltukResim" UriSource="/images/dolu_koltuk.png"/>
         <BitmapImage x:Key="BosKoltukResim" UriSource="/images/bos_koltuk.png"/>
 
-        <!-- Büyük Koltuk Stili -->
+    
         <Style x:Key="BuyukKoltukStyle" TargetType="Border">
             <Setter Property="Width" Value="120"/>
             <Setter Property="Height" Value="100"/>
@@ -28,7 +28,7 @@
             <Setter Property="Background" Value="#ffffff"/>
         </Style>
 
-        <!-- Koltuk DataTemplate -->
+       
         <DataTemplate x:Key="KoltukTemplate">
             <Border Style="{StaticResource BuyukKoltukStyle}" ToolTip="{Binding ToolTipText}">
                 <Grid>
@@ -38,7 +38,6 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Pozisyon Bilgisi -->
                     <Border Grid.Row="0" 
                             Background="#4CAF50" 
                             CornerRadius="3"
@@ -51,7 +50,7 @@
                                    Foreground="White"/>
                     </Border>
 
-                    <!-- Koltuk Resmi -->
+                
                     <Image Grid.Row="1" 
                            Source="{Binding KoltukResim}" 
                            Width="40" 
@@ -60,13 +59,12 @@
                            VerticalAlignment="Center"
                            Margin="0,5,0,0"/>
 
-                    <!-- Öğrenci Bilgileri -->
+                 
                     <StackPanel Grid.Row="2" 
                                 Orientation="Vertical" 
                                 Margin="3"
                                 VerticalAlignment="Bottom">
 
-                        <!-- Öğrenci Ad Soyad -->
                         <TextBlock Text="{Binding OgrenciAdSoyad}"
                                    FontSize="9"
                                    FontWeight="SemiBold"
@@ -76,7 +74,7 @@
                                    MaxHeight="30"
                                    TextTrimming="CharacterEllipsis"/>
 
-                        <!-- Öğrenci No -->
+                     
                         <TextBlock Text="{Binding OgrenciNo}"
                                    FontSize="8"
                                    Foreground="#666666"
@@ -94,7 +92,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Üst Panel -->
+      
         <Border Background="White"
                 CornerRadius="8"
                 Padding="15"
@@ -108,7 +106,6 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Derslik Seçim -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Text="🎓 Derslik Seçin:"
                                VerticalAlignment="Center"
@@ -127,7 +124,7 @@
                               BorderThickness="1"/>
                 </StackPanel>
 
-                <!-- Sınıf Bilgisi -->
+                
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,20,0">
                     <TextBlock Text="🏫 Sınıf Düzeni:"
                                VerticalAlignment="Center"
@@ -141,7 +138,7 @@
                                Foreground="#555"/>
                 </StackPanel>
 
-                <!-- PDF Butonu -->
+               
                 <Button Grid.Column="2"
                         Command="{Binding PdfIndir}"
                         Content="📄 PDF İndir"
@@ -181,7 +178,7 @@
             </Grid>
         </Border>
 
-        <!-- Gerçek Sınıf Oturma Planı -->
+        
         <Border Grid.Row="1"
                 Background="White"
                 CornerRadius="8"
@@ -195,7 +192,6 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <!-- Başlık -->
                 <TextBlock Grid.Row="0" 
                            Text="{Binding SecilenDerslik.DerslikAdi, StringFormat='{}🗓️ {0} - Gerçek Oturma Planı'}"
                            FontWeight="Bold"
@@ -204,8 +200,8 @@
                            Margin="0,0,0,15"
                            HorizontalAlignment="Center"/>
 
-                <!-- Sınıf Çizimi - BASİT VERSİYON -->
-                <!-- Sınıf Çizimi - DÜZGÜN VERSİYON -->
+               
+               
                 <ScrollViewer Grid.Row="1" 
               HorizontalScrollBarVisibility="Auto" 
               VerticalScrollBarVisibility="Auto"
@@ -219,15 +215,15 @@
 
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <!-- SATIR -->
+                               
                                 <Border Background="#f8f9fa" CornerRadius="4" Padding="5" Margin="0,2,0,2">
                                     <StackPanel Orientation="Horizontal">
-                                        <!-- Satır Numarası -->
+                                     
                                         <TextBlock Text="{Binding SatirNumarasi, StringFormat='Satır {0}'}" 
                                    FontWeight="Bold" FontSize="11" Foreground="#2b4c7e"
                                    Width="60" VerticalAlignment="Center"/>
 
-                                        <!-- SIRALAR -->
+                                       
                                         <ItemsControl ItemsSource="{Binding SirayaGoreKoltuklar}">
                                             <ItemsControl.ItemsPanel>
                                                 <ItemsPanelTemplate>
@@ -237,14 +233,14 @@
 
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
-                                                    <!-- TEK BİR SIRA (içinde koltuklar) -->
+                                                   
                                                     <StackPanel Orientation="Vertical" Margin="5,0,5,0">
-                                                        <!-- Sıra Numarası -->
+                                                      
                                                         <TextBlock Text="{Binding [0].Sira, StringFormat='S{0}'}" 
                                                    FontSize="9" Foreground="#666" 
                                                    HorizontalAlignment="Center" Margin="0,0,0,2"/>
 
-                                                        <!-- KOLTUKLAR -->
+                                                     
                                                         <ItemsControl ItemsSource="{Binding}" 
                                                       ItemTemplate="{StaticResource KoltukTemplate}">
                                                             <ItemsControl.ItemsPanel>
@@ -264,7 +260,7 @@
                     </ItemsControl>
                 </ScrollViewer>
 
-                <!-- Açıklama -->
+               
                 <Border Grid.Row="2"
                         Background="#f8f9fa"
                         CornerRadius="6"
